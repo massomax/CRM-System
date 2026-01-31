@@ -1,35 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import styles from "./App.module.css";
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [isEdit, setIsEdit] = useState(false);
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className={styles.root}>
+      <div className={styles.header}>
+        <input className={styles.input} />
+        <button className={styles.addBtn}>Добавить</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div className={styles.filters}>
+        <button className={styles.filterBtn}>Все</button>
+        <button className={styles.filterBtn}>В работе</button>
+        <button className={styles.filterBtn}>Завершено</button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+      <ul className={styles.list}>
+        {isEdit ? (
+          <li className={styles.item}>
+            <input type="checkbox" className={styles.checkbox} disabled />
+            <input
+              className={styles.input}
+              placeholder="введите новое имя задачи"
+            />
+            <button className={styles.deleteBtn}>Удалить</button>
+            <button
+              className={styles.saveBtn}
+              onClick={() => setIsEdit(!isEdit)}>
+              Сохранить
+            </button>
+          </li>
+        ) : (
+          <li className={styles.item}>
+            <input type="checkbox" className={styles.checkbox} />
+            <span className={styles.title}>Название задачи</span>
+            <button className={styles.deleteBtn}>Удалить</button>
+            <button
+              className={styles.editBtn}
+              onClick={() => setIsEdit(!isEdit)}>
+              Редактировать
+            </button>
+          </li>
+        )}
+      </ul>
+    </div>
+  );
 }
 
-export default App
+export default App;
