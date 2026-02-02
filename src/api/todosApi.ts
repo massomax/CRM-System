@@ -6,8 +6,9 @@ import {
 } from "@/types/todos";
 import { requestJson } from "./http";
 
-export const getTodos = () => {
-  return requestJson<MetaResponse<Todo, TodoInfo>>("/todos");
+export const getTodos = (filter?: string) => {
+  const params = filter ? `?filter=${filter}` : "";
+  return requestJson<MetaResponse<Todo, TodoInfo>>("/todos" + params);
 };
 
 export const createTodo = (todo: TodoRequest) => {

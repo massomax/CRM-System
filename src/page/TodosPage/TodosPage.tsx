@@ -6,6 +6,8 @@ import { validateTodoTitle } from "@/utils/validation";
 import { getTodos, createTodo } from "@/api/todosApi";
 
 import type { Todo } from "@/types/todos";
+import { TodoFilters } from "@/components/TodoFilters/TodoFilters";
+import { TodoList } from "@/components/TodoList/TodoList";
 
 export function TodosPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -13,6 +15,7 @@ export function TodosPage() {
   const [error, setError] = useState<string | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [filter, setFilter] = useState<string>("all");
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTitle(e.target.value);
@@ -47,11 +50,11 @@ export function TodosPage() {
     }
   };
 
-  const loadTodos = async () => {
+  const loadTodos = async (filter: string = "all") => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getTodos();
+      const data = await getTodos(filter);
       setTodos(data.data);
     } catch (error) {
       if (error instanceof Error) {
@@ -66,9 +69,14 @@ export function TodosPage() {
     }
   };
 
+  const handleFilterChange = (filter: string) => {
+    setFilter(filter);
+    loadTodos(filter);
+  };
+
   useEffect(() => {
-    loadTodos();
-  }, []);
+    loadTodos(filter);
+  }, [filter]);
 
   return (
     <div className={styles.root}>
@@ -78,46 +86,14 @@ export function TodosPage() {
         onSubmit={handleAddTodo}
         error={error}
       />
-      <div className={styles.filters}>
-        <button type="button" className={styles.filterBtn}>
-          Все
-        </button>
-        <button type="button" className={styles.filterBtn}>
-          В работе
-        </button>
-        <button type="button" className={styles.filterBtn}>
-          Завершено
-        </button>
-      </div>
-      {loading ? (
-        <p>Загрузка задач...</p>
-      ) : error ? (
-        <p className={styles.error}>Ошибка: {error}</p>
-      ) : todos.length === 0 ? (
-        <p>Задачи не найдены</p>
-      ) : (
-        <ul className={styles.list}>
-          {todos.map((todo) => (
-            <li key={todo.id} className={styles.item}>
-              <input
-                type="checkbox"
-                className={styles.checkbox}
-                defaultChecked={todo.isDone}
-              />
-              <span className={styles.title}>{todo.title}</span>
-              <button type="button" className={styles.deleteBtn}>
-                Удалить
-              </button>
-              <button
-                type="button"
-                className={styles.editBtn}
-                onClick={() => setEditingId(todo.id)}>
-                Редактировать
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <TodoFilters onFilterChange={handleFilterChange} />
+
+      <TodoList
+        todos={todos}
+        loading={loading}
+        error={error}
+        setEditingId={setEditingId}
+      />
     </div>
   );
 }
