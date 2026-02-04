@@ -17,3 +17,16 @@ export const createTodo = (todo: TodoRequest) => {
     body: todo,
   });
 };
+
+export const deleteTodo = (id: Todo["id"]) => {
+  return requestJson<Todo>(`/todos/${id}`, {
+    method: "DELETE",
+  });
+};
+
+export const updateTodo = (id: Todo["id"], payload : TodoRequest) => {
+  return requestJson<Todo, TodoRequest>(`/todos/${id}`, {
+    method: "PUT",
+    body: payload,
+  });
+}

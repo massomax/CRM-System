@@ -1,4 +1,4 @@
-type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 type RequestOptions<TBody> = { method?: HttpMethod; body?: TBody };
 
@@ -15,6 +15,7 @@ export async function requestJson<TResponse, TBody = undefined>(
     init.body = JSON.stringify(options.body);
     init.headers = { "Content-Type": "application/json" };
   }
+
   const response = await fetch(`${baseUrl}${path}`, init);
 
   if (!response.ok) {
@@ -24,5 +25,10 @@ export async function requestJson<TResponse, TBody = undefined>(
     );
   }
 
+  const contentType = response.headers.get("content-type");
+
+  if (contentType === null || !contentType.includes("application/json")) {
+    return undefined as TResponse;
+  }
   return (await response.json()) as TResponse;
 }
