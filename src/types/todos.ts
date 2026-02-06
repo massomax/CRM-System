@@ -23,3 +23,5 @@ export interface MetaResponse<T, N> {
     totalAmount: number;
   };
 }
+
+export type filterType = "all" | "inWork" | "completed";

@@ -1,4 +1,67 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
 body {
   margin: 0;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+ul,
+ol {
+  margin: 0;
   padding: 0;
+  list-style: none;
+}
+
+:root {
+  --bg: #f6f7fb;
+  --panel: #ffffff;
+  --border: #e6e8f0;
+
+  --text: #0f172a;
+  --muted: #667085;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+
+  --radius: 12px;
+  --gap: 12px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
 }

@@ -1,3 +1,4 @@
+import { AddIcon } from "../icons/icons";
 import styles from "./AddTodoForm.module.css";
 
 interface AddTodoFormProps {
@@ -14,15 +15,17 @@ export function AddTodoForm({
   error,
 }: AddTodoFormProps) {
   return (
-    <form onSubmit={onSubmit} className={styles.header}>
-      <input
-        className={styles.input}
-        value={newTitle}
-        onChange={onTitleChange}
-      />
-      <button className={styles.addBtn} type="submit">
-        Добавить
-      </button>
+    <form onSubmit={onSubmit} className={styles.form}>
+      <div className={styles.row}>
+        <input
+          className={styles.input}
+          value={newTitle}
+          onChange={onTitleChange}
+        />
+        <button className={styles.addBtn} type="submit">
+          <AddIcon />
+        </button>
+      </div>
       {error && <p className={styles.error}>{error}</p>}
     </form>
   );

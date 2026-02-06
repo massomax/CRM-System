@@ -1,11 +1,48 @@
-header {
-  margin: 0;
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-input {
-  margin: 0;
+.row {
+  width: 100%;
+  display: flex;
+  gap: 12px;
 }
 
-addBtn {
-  margin-top: 0;
+.input {
+  flex: 1;
+  height: 40px;
+  padding: 0 12px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--primary);
+}
+
+.addBtn {
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--primary);
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.addBtn:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--danger);
 }

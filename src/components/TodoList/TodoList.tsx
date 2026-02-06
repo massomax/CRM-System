@@ -5,19 +5,25 @@ import type { Todo } from "@/types/todos";
 export function TodoList({
   todos,
   loading,
-  handleUpdateTitle,
-  setEditingId,
-  onDeleteTodo,
+  updateTitle,
   editingId,
-  handleToggleIsDone,
+  setEditingId,
+  setUpdateTitle,
+  onDeleteTodo,
+  onToggleIsDone,
+  onUpdateTitle,
+  onHandleUpdateTitleChange,
 }: {
   todos: Todo[];
   loading: boolean;
-  handleUpdateTitle: (id: Todo["id"], newTitle: string) => void;
+  updateTitle: string;
+  editingId: Todo["id"] | null;
   setEditingId: (id: Todo["id"] | null) => void;
+  setUpdateTitle: (title: string) => void;
+  onUpdateTitle: (id: Todo["id"], newTitle: string) => void;
   onDeleteTodo: (id: Todo["id"]) => void;
-  editingId: number | null;
-  handleToggleIsDone: (id: Todo["id"], isDone: boolean) => void;
+  onToggleIsDone: (id: Todo["id"], isDone: boolean) => void;
+  onHandleUpdateTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   return loading ? (
     <p>Загрузка задач...</p>
@@ -27,13 +33,16 @@ export function TodoList({
     <ul className={styles.list}>
       {todos.map((todo) => (
         <TodoItem
-          todo={todo}
-          setEditingId={setEditingId}
-          onDeleteTodo={onDeleteTodo}
           key={todo.id}
-          handleUpdateTitle={handleUpdateTitle}
+          todo={todo}
+          updateTitle={updateTitle}
           editingId={editingId}
-          handleToggleIsDone={handleToggleIsDone}
+          setEditingId={setEditingId}
+          setUpdateTitle={setUpdateTitle}
+          onDeleteTodo={onDeleteTodo}
+          onUpdateTitle={onUpdateTitle}
+          onToggleIsDone={onToggleIsDone}
+          onHandleUpdateTitleChange={onHandleUpdateTitleChange}
         />
       ))}
     </ul>

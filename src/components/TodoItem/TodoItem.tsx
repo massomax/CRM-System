@@ -1,58 +1,71 @@
+import { CancelIcon, DeleteIcon, EditIcon, SaveIcon } from "../icons/icons";
 import styles from "./TodoItem.module.css";
 import type { Todo } from "@/types/todos";
 
 export function TodoItem({
-  key,
   todo,
+  updateTitle,
   editingId,
   setEditingId,
+  setUpdateTitle,
   onDeleteTodo,
-  handleUpdateTitle,
-  handleToggleIsDone,
+  onUpdateTitle,
+  onToggleIsDone,
+  onHandleUpdateTitleChange,
 }: {
   todo: Todo;
-  handleUpdateTitle: (id: Todo["id"], newTitle: string) => void;
+  updateTitle: string;
+  editingId: Todo["id"] | null;
   setEditingId: (id: Todo["id"] | null) => void;
+  setUpdateTitle: (title: string) => void;
   onDeleteTodo: (id: Todo["id"]) => void;
-  editingId: number | null;
-  key: Todo["id"];
-  handleToggleIsDone: (id: Todo["id"], isDone: boolean) => void;
+  onUpdateTitle: (id: Todo["id"], newTitle: string) => void;
+  onToggleIsDone: (id: Todo["id"], isDone: boolean) => void;
+  onHandleUpdateTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   return editingId === todo.id ? (
-    <li key={key} className={styles.item}>
+    <li className={styles.item}>
       <input
         type="text"
         className={styles.editInput}
-        defaultValue={todo.title}
-        onBlur={(e) => {
-          handleUpdateTitle(todo.id, e.target.value);
-          setEditingId(null);
-        }}
+        value={updateTitle}
+        placeholder={todo.title}
+        onChange={onHandleUpdateTitleChange}
       />
-      <button onClick={() => setEditingId(null)}>Отменить</button>
+      <button type="button" onClick={() => setEditingId(null)}>
+        <CancelIcon />
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          onUpdateTitle(todo.id, updateTitle);
+        }}>
+        <SaveIcon />
+      </button>
     </li>
   ) : (
-    <li key={key} className={styles.item}>
+    <li className={styles.item}>
       <input
         type="checkbox"
         className={styles.checkbox}
-        defaultChecked={todo.isDone}
-        onClick={() => handleToggleIsDone(todo.id, !todo.isDone)}
+        checked={todo.isDone}
+        onChange={(e) => onToggleIsDone(todo.id, e.target.checked)}
       />
       <span className={styles.title}>{todo.title}</span>
       <button
         type="button"
         className={styles.deleteBtn}
         onClick={() => onDeleteTodo(todo.id)}>
-        Удалить
+        <DeleteIcon />
       </button>
       <button
         type="button"
         className={styles.editBtn}
         onClick={() => {
           setEditingId(todo.id);
+          setUpdateTitle(todo.title);
         }}>
-        Редактировать
+        <EditIcon />
       </button>
     </li>
   );

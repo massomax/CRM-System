@@ -3,25 +3,30 @@ import { AddTodoForm } from "@components/AddTodoForm/AddTodoForm";
 
 import styles from "./TodosPage.module.css";
 import { validateTodoTitle } from "@/utils/validation";
-import { getTodos, createTodo, deleteTodo, updateTodo } from "@/api/todosApi";
+import { getTodos, createTodo, deleteTodo, updateTodo } from "@/utils/todosApi";
 
-import type { Todo } from "@/types/todos";
+import type { Todo, filterType } from "@/types/todos";
+
 import { TodoFilters } from "@/components/TodoFilters/TodoFilters";
 import { TodoList } from "@/components/TodoList/TodoList";
 
 export function TodosPage() {
   const [newTitle, setNewTitle] = useState<string>("");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [updateTitle, setUpdateTitle] = useState<string>("");
+  const [editingId, setEditingId] = useState<Todo["id"] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [filter, setFilter] = useState<string>("all");
+  const [filter, setFilter] = useState<filterType>("all");
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTitle(e.target.value);
     setError(null);
   };
-
+  const handleUpdateTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdateTitle(e.target.value);
+    setError(null);
+  };
   const handleAddTodo = async (e: React.SubmitEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
@@ -49,8 +54,7 @@ export function TodosPage() {
       setLoading(false);
     }
   };
-
-  const loadTodos = async (filter: string = "all") => {
+  const loadTodos = async (filter: filterType = "all") => {
     setLoading(true);
     setError(null);
     try {
@@ -68,12 +72,9 @@ export function TodosPage() {
       setLoading(false);
     }
   };
-
-  const handleFilterChange = (filter: string) => {
+  const handleFilterChange = (filter: filterType) => {
     setFilter(filter);
-    loadTodos(filter);
   };
-
   const handleDeleteTodo = async (id: Todo["id"]) => {
     try {
       setLoading(true);
@@ -92,13 +93,19 @@ export function TodosPage() {
       setLoading(false);
     }
   };
-
   const handleUpdateTitle = async (id: Todo["id"], newTitle: string) => {
     try {
+      const result = validateTodoTitle(newTitle);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
       setLoading(true);
       setError(null);
-      await updateTodo(id, { title: newTitle });
+      await updateTodo(id, { title: result.value });
       await loadTodos(filter);
+      setUpdateTitle("");
+      setEditingId(null);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -111,10 +118,10 @@ export function TodosPage() {
       setLoading(false);
     }
   };
-
   const handleToggleIsDone = async (id: Todo["id"], isDone: boolean) => {
     try {
       setLoading(true);
+      setError(null);
       await updateTodo(id, { isDone });
       await loadTodos(filter);
     } catch (error) {
@@ -136,22 +143,28 @@ export function TodosPage() {
 
   return (
     <div className={styles.root}>
-      <AddTodoForm
-        newTitle={newTitle}
-        onTitleChange={handleTitleChange}
-        onSubmit={handleAddTodo}
-        error={error}
-      />
-      <TodoFilters onFilterChange={handleFilterChange} />
-      <TodoList
-        todos={todos}
-        loading={loading}
-        setEditingId={setEditingId}
-        onDeleteTodo={handleDeleteTodo}
-        handleUpdateTitle={handleUpdateTitle}
-        handleToggleIsDone={handleToggleIsDone}
-        editingId={editingId}
-      />
+      <div className={styles.container}>
+        <h1 className={styles.title}>Todo</h1>
+        <AddTodoForm
+          newTitle={newTitle}
+          onTitleChange={handleTitleChange}
+          onSubmit={handleAddTodo}
+          error={error}
+        />
+        <TodoFilters onFilterChange={handleFilterChange} filter={filter} />
+        <TodoList
+          todos={todos}
+          updateTitle={updateTitle}
+          loading={loading}
+          setEditingId={setEditingId}
+          setUpdateTitle={setUpdateTitle}
+          onDeleteTodo={handleDeleteTodo}
+          onUpdateTitle={handleUpdateTitle}
+          onToggleIsDone={handleToggleIsDone}
+          onHandleUpdateTitleChange={handleUpdateTitleChange}
+          editingId={editingId}
+        />
+      </div>
     </div>
   );
 }
