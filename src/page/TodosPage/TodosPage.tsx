@@ -5,7 +5,7 @@ import styles from "./TodosPage.module.css";
 import { validateTodoTitle } from "@/utils/validation";
 import { getTodos, createTodo, deleteTodo, updateTodo } from "@/utils/todosApi";
 
-import type { Todo, filterType } from "@/types/todos";
+import { type Todo, type TodoInfo, type filterType } from "@/types/todos";
 
 import { TodoFilters } from "@/components/TodoFilters/TodoFilters";
 import { TodoList } from "@/components/TodoList/TodoList";
@@ -14,6 +14,7 @@ export function TodosPage() {
   const [newTitle, setNewTitle] = useState<string>("");
   const [updateTitle, setUpdateTitle] = useState<string>("");
   const [editingId, setEditingId] = useState<Todo["id"] | null>(null);
+  const [countTask, setCountTasks] = useState<TodoInfo | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -59,7 +60,9 @@ export function TodosPage() {
     setError(null);
     try {
       const data = await getTodos(filter);
+      console.log(data.info);
       setTodos(data.data);
+      setCountTasks(data.info);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -151,7 +154,11 @@ export function TodosPage() {
           onSubmit={handleAddTodo}
           error={error}
         />
-        <TodoFilters onFilterChange={handleFilterChange} filter={filter} />
+        <TodoFilters
+          onFilterChange={handleFilterChange}
+          filter={filter}
+          countTask={countTask}
+        />
         <TodoList
           todos={todos}
           updateTitle={updateTitle}
