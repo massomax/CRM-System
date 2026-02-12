@@ -1,4 +1,4 @@
-import { TodosPage } from "./page/TodosPage/TodosPage";
+import { TodosPage } from "./page/TodosPage";
 
 function App() {
   return <TodosPage />;
