@@ -24,4 +24,4 @@ export interface MetaResponse<T, N> {
   };
 }
 
-export type filterType = "all" | "inWork" | "completed";
+export type FilterType = "all" | "inWork" | "completed";

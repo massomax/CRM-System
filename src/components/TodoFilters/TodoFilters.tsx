@@ -1,32 +1,34 @@
-import type { filterType, TodoInfo } from "@/types/todos";
+import type { FilterType, TodoInfo } from "@/types/todos";
 import styles from "./TodoFilters.module.css";
+import type { JSX } from "react";
 
 interface TodoFiltersProps {
-  filter: filterType;
-  countTask?: TodoInfo;
-  onFilterChange: (filter: filterType) => void;
+  todoFilter: FilterType;
+  amountTasks?: TodoInfo;
+  onFilterChange: (filter: FilterType) => void;
 }
 
-export function TodoFilters({ ...props }: TodoFiltersProps) {
+export function TodoFilters({todoFilter, amountTasks, onFilterChange}: TodoFiltersProps): JSX.Element {
   return (
     <div className={styles.filters}>
+
       <button
         type="button"
-        className={`${styles.filterBtn} ${props.filter === "all" ? styles.active : ""}`}
-        onClick={() => props.onFilterChange("all")}>
-        Все {` (${props.countTask?.all ?? 0})`}
-      </button>{" "}
-      <button
-        type="button"
-        className={`${styles.filterBtn} ${props.filter === "inWork" ? styles.active : ""}`}
-        onClick={() => props.onFilterChange("inWork")}>
-        В работе {` (${props.countTask?.inWork ?? 0})`}
+        className={`${styles.filterBtn} ${todoFilter === "all" ? styles.active : ""}`}
+        onClick={() => onFilterChange("all")}>
+        Все {` (${amountTasks?.all ?? 0})`}
       </button>
       <button
         type="button"
-        className={`${styles.filterBtn} ${props.filter === "completed" ? styles.active : ""}`}
-        onClick={() => props.onFilterChange("completed")}>
-        Выполненные {` (${props.countTask?.completed ?? 0})`}
+        className={`${styles.filterBtn} ${todoFilter === "inWork" ? styles.active : ""}`}
+        onClick={() => onFilterChange("inWork")}>
+        В работе {` (${amountTasks?.inWork ?? 0})`}
+      </button>
+      <button
+        type="button"
+        className={`${styles.filterBtn} ${todoFilter === "completed" ? styles.active : ""}`}
+        onClick={() => onFilterChange("completed")}>
+        Выполненные {` (${amountTasks?.completed ?? 0})`}
       </button>
     </div>
   );

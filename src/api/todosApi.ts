@@ -1,32 +1,33 @@
 import {
+  type FilterType,
   type MetaResponse,
   type Todo,
   type TodoInfo,
   type TodoRequest,
 } from "@/types/todos";
-import { requestJson } from "./http";
+import { apiRequest } from "./http";
 
-export const getTodos = (filter?: string) => {
+export const getTodos = (filter?: FilterType): Promise<MetaResponse<Todo, TodoInfo>> => {
   const params = filter ? `?filter=${filter}` : "";
-  return requestJson<MetaResponse<Todo, TodoInfo>>("/todos" + params);
+  return apiRequest<MetaResponse<Todo, TodoInfo>>("/todos" + params);
 };
 
-export const createTodo = (todo: TodoRequest) => {
-  return requestJson<Todo, TodoRequest>("/todos", {
+export const createTodo = (todo: TodoRequest): Promise<Todo> => {
+  return apiRequest<Todo, TodoRequest>("/todos", {
     method: "POST",
     body: todo,
   });
 };
 
-export const deleteTodo = (id: Todo["id"]) => {
-  return requestJson<Todo>(`/todos/${id}`, {
+export const deleteTodo = (id: Todo["id"]): Promise<void> => {
+  return apiRequest<void>(`/todos/${id}`, {
     method: "DELETE",
   });
 };
 
-export const updateTodo = (id: Todo["id"], payload : TodoRequest) => {
-  return requestJson<Todo, TodoRequest>(`/todos/${id}`, {
+export const updateTodo = (id: Todo["id"], todo : TodoRequest): Promise<Todo> => {
+  return apiRequest<Todo, TodoRequest>(`/todos/${id}`, {
     method: "PUT",
-    body: payload,
+    body: todo,
   });
 }

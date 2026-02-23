@@ -1,135 +1,132 @@
-import { useState } from "react";
-import { CancelIcon, DeleteIcon, EditIcon, SaveIcon } from "../icons/icons";
+import { useState, type JSX } from "react";
+import { CancelIcon, DeleteIcon, EditIcon, SaveIcon } from "@/ui/icons";
 import styles from "./TodoItem.module.css";
-import type { filterType, Todo } from "@/types/todos";
+import type { Todo } from "@/types/todos";
 import { deleteTodo, updateTodo } from "@/api/todosApi";
 import { validateTodoTitle } from "@/utils/validation";
 
 interface TodoItemProps {
   todo: Todo;
   setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  loadTodos: (filter: filterType) => Promise<void>;
-  filter: filterType;
+  loadTodos: () => Promise<void>;
 }
 
-export function TodoItem({ ...props }: TodoItemProps) {
-  const [updateTitle, setUpdateTitle] = useState<string>("");
-  const [editingId, setEditingId] = useState<Todo["id"] | null>(null);
+export function TodoItem({ todo, setLoading, loadTodos }: TodoItemProps): JSX.Element {
+  const [editTitle, setEditTitle] = useState<string>("");
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleUpdateTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUpdateTitle(e.target.value);
-    props.setError(null);
+    setEditTitle(e.target.value);
+    setError(null);
   };
 
   const handleDeleteTodo = async (id: Todo["id"]) => {
     try {
-      props.setLoading(true);
-      props.setError(null);
+      setLoading(true);
+      setError(null);
       await deleteTodo(id);
-      await props.loadTodos(props.filter);
+      await loadTodos();
     } catch (error) {
       if (error instanceof Error) {
-        props.setError(error.message);
-        console.error("Ошибка при удалении задачи:", error.message);
+        setError(error.message);
       } else {
-        props.setError("Неизвестная ошибка при удалении задачи");
-        console.error("Неизвестная ошибка при удалении задачи");
+        setError("Неизвестная ошибка при удалении задачи");
       }
     } finally {
-      props.setLoading(false);
+      setLoading(false);
     }
   };
 
-  const handleUpdateTitle = async (id: Todo["id"], newTitle: string) => {
+  const handleSaveTitle = async (id: Todo["id"], newTitle: string) => {
     try {
-      const result = validateTodoTitle(newTitle);
-      if (!result.ok) {
-        props.setError(result.error);
-        return;
-      }
-      props.setLoading(true);
-      props.setError(null);
-      await updateTodo(id, { title: result.value });
-      await props.loadTodos(props.filter);
-      setUpdateTitle("");
-      setEditingId(null);
+      const validatedTitle = validateTodoTitle(newTitle.trim());
+      setLoading(true);
+      setError(null);
+      await updateTodo(id, { title: validatedTitle });
+      await loadTodos();
+      setEditTitle("");
+      setIsEdit(false);
     } catch (error) {
       if (error instanceof Error) {
-        props.setError(error.message);
-        console.error("Ошибка при обновлении задачи:", error.message);
+        setError(error.message);
       } else {
-        props.setError("Неизвестная ошибка при обновлении задачи");
-        console.error("Неизвестная ошибка при обновлении задачи");
+        setError("Неизвестная ошибка при обновлении задачи");
       }
     } finally {
-      props.setLoading(false);
+      setLoading(false);
     }
   };
 
   const handleToggleIsDone = async (id: Todo["id"], isDone: boolean) => {
     try {
-      props.setLoading(true);
-      props.setError(null);
+      setLoading(true);
+      setError(null);
       await updateTodo(id, { isDone });
-      await props.loadTodos(props.filter);
+      await loadTodos();
     } catch (error) {
       if (error instanceof Error) {
-        props.setError(error.message);
-        console.error("Ошибка при обновлении статуса задачи:", error.message);
+        setError(error.message);
       } else {
-        props.setError("Неизвестная ошибка при обновлении статуса задачи");
-        console.error("Неизвестная ошибка при обновлении статуса задачи");
+        setError("Неизвестная ошибка при обновлении статуса задачи");
       }
     } finally {
-      props.setLoading(false);
+      setLoading(false);
     }
   };
 
-  return editingId === props.todo.id ? (
+  const handleCancelEdit = () => {
+    setError(null);
+    setIsEdit(false);
+  }
+
+  const handleStartEdit = () => {
+    setError(null);
+    setIsEdit(true);
+    setEditTitle(todo.title);
+  }
+
+  return isEdit ? (<div>
     <li className={styles.item}>
       <input
         type="text"
         className={styles.editInput}
-        value={updateTitle}
-        placeholder={props.todo.title}
+        value={editTitle}
+        placeholder={todo.title}
         onChange={handleUpdateTitleChange}
       />
-      <button type="button" onClick={() => setEditingId(null)}>
+      <button type="button" onClick={handleCancelEdit}>
         <CancelIcon />
       </button>
       <button
         type="button"
-        onClick={() => {
-          handleUpdateTitle(props.todo.id, updateTitle);
-        }}>
+        onClick={() => handleSaveTitle(todo.id, editTitle)}>
         <SaveIcon />
       </button>
-    </li>
+      
+    </li>{error && <p className={styles.error}>{error}</p>}</div>
   ) : (
     <li className={styles.item}>
       <input
         type="checkbox"
         className={styles.checkbox}
-        checked={props.todo.isDone}
-        onChange={(e) => handleToggleIsDone(props.todo.id, e.target.checked)}
+        checked={todo.isDone}
+        onChange={(e) => handleToggleIsDone(todo.id, e.target.checked)}
       />
-      <span className={styles.title}>{props.todo.title}</span>
+      <span className={styles.title}>{todo.title}</span>
       <button
         type="button"
         className={styles.deleteBtn}
-        onClick={() => handleDeleteTodo(props.todo.id)}>
+        onClick={() => handleDeleteTodo(todo.id)}>
         <DeleteIcon />
       </button>
       <button
         type="button"
         className={styles.editBtn}
-        onClick={() => {
-          setEditingId(props.todo.id);
-          setUpdateTitle(props.todo.title);
-        }}>
+        onClick={handleStartEdit}>
         <EditIcon />
       </button>
+      
     </li>
   );
 }

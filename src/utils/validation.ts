@@ -1,20 +1,9 @@
-export type TodoTitleValidationResult =
-  | { ok: true; value: string }
-  | { ok: false; error: string };
-
 const minValue = 2;
 const maxValue = 64;
 
-export function validateTodoTitle(title: string): TodoTitleValidationResult {
-  const clearTitle = title.trim();
-  if (!clearTitle) {
-    return { ok: false, error: "Название задачи не может быть пустым" };
-  }
-  if (clearTitle.length < minValue || clearTitle.length > maxValue) {
-    return {
-      ok: false,
-      error: "Название задачи должно содержать от 2 до 64 символов",
-    };
-  }
-  return { ok: true, value: clearTitle };
+export function validateTodoTitle(title: string): string {
+    if (!title) throw new Error("Название задачи не может быть пустым");
+    if (title.length < minValue) throw new Error(`Название задачи должно быть не меньше ${minValue} символов`);
+    if (title.length > maxValue) throw new Error(`Название задачи должно быть не больше ${maxValue} символов`);
+    return title;
 }

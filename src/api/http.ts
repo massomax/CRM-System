@@ -2,7 +2,7 @@ type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 type RequestOptions<TBody> = { method?: HttpMethod; body?: TBody };
 
-export async function requestJson<TResponse, TBody = undefined>(
+export async function apiRequest<TResponse, TBody = undefined>(
   path: string,
   options?: RequestOptions<TBody>,
 ): Promise<TResponse> {
