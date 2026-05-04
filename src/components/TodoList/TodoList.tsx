@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 import { TodoItem } from "../TodoItem/TodoItem";
 import styles from "./TodoList.module.css";
-import type {  Todo } from "@/types/todos";
+import type { Todo } from "@/types/todos";
 
 interface TodoListProps {
   todos: Todo[];
@@ -9,7 +9,11 @@ interface TodoListProps {
   loadTodos: () => Promise<void>;
 }
 
-export function TodoList({ todos, setLoading, loadTodos }: TodoListProps): JSX.Element {
+export function TodoList({
+  todos,
+  setLoading,
+  loadTodos,
+}: TodoListProps): JSX.Element {
   return (
     <ul className={styles.list}>
       {todos.map((todo) => (

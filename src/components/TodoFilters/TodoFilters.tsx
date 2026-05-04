@@ -2,34 +2,48 @@ import type { FilterType, TodoInfo } from "@/types/todos";
 import styles from "./TodoFilters.module.css";
 import type { JSX } from "react";
 
+import { Tab } from "@/ui/Tab/Tab";
+
 interface TodoFiltersProps {
   todoFilter: FilterType;
   amountTasks?: TodoInfo;
   onFilterChange: (filter: FilterType) => void;
 }
 
-export function TodoFilters({todoFilter, amountTasks, onFilterChange}: TodoFiltersProps): JSX.Element {
+export function TodoFilters({
+  todoFilter,
+  amountTasks,
+  onFilterChange,
+}: TodoFiltersProps): JSX.Element {
   return (
     <div className={styles.filters}>
-
       <button
         type="button"
         className={`${styles.filterBtn} ${todoFilter === "all" ? styles.active : ""}`}
-        onClick={() => onFilterChange("all")}>
+        onClick={() => onFilterChange("all")}
+      >
         Все {` (${amountTasks?.all ?? 0})`}
       </button>
       <button
         type="button"
         className={`${styles.filterBtn} ${todoFilter === "inWork" ? styles.active : ""}`}
-        onClick={() => onFilterChange("inWork")}>
+        onClick={() => onFilterChange("inWork")}
+      >
         В работе {` (${amountTasks?.inWork ?? 0})`}
       </button>
       <button
         type="button"
         className={`${styles.filterBtn} ${todoFilter === "completed" ? styles.active : ""}`}
-        onClick={() => onFilterChange("completed")}>
+        onClick={() => onFilterChange("completed")}
+      >
         Выполненные {` (${amountTasks?.completed ?? 0})`}
       </button>
+      <Tab
+        label={"Все"}
+        count={amountTasks?.all}
+        isActive={todoFilter === "all"}
+        onFilterChange={() => onFilterChange("all")}
+      />
     </div>
   );
 }
