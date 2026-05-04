@@ -3,14 +3,17 @@ import { AddIcon } from "@/ui/icons";
 import { validateTodoTitle } from "@/utils/validation";
 import { createTodo } from "@/api/todosApi";
 import styles from "./AddTodoForm.module.css";
+import { Input } from "@/ui/Input/Input";
 
 interface AddTodoFormProps {
   setLoading: (loading: boolean) => void;
   loadTodos: () => Promise<void>;
 }
 
-export function AddTodoForm({  setLoading, loadTodos }: AddTodoFormProps): JSX.Element {
-
+export function AddTodoForm({
+  setLoading,
+  loadTodos,
+}: AddTodoFormProps): JSX.Element {
   const [newTitle, setNewTitle] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
@@ -37,16 +40,17 @@ export function AddTodoForm({  setLoading, loadTodos }: AddTodoFormProps): JSX.E
         setError("Неизвестная ошибка при добавлении задачи");
       }
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
   return (
     <form onSubmit={handleAddTodo} className={styles.form}>
       <div className={styles.row}>
-        <input
-          className={styles.input}
+        <Input
           value={newTitle}
-          onChange={handleEditTitleChange}
+          placeholder={"Введите текст задачи"}
+          // isDisabled={true}
+          handleEditTitleChange={handleEditTitleChange}
         />
         <button className={styles.addBtn} type="submit">
           <AddIcon />

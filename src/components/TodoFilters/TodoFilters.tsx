@@ -17,32 +17,23 @@ export function TodoFilters({
 }: TodoFiltersProps): JSX.Element {
   return (
     <div className={styles.filters}>
-      <button
-        type="button"
-        className={`${styles.filterBtn} ${todoFilter === "all" ? styles.active : ""}`}
-        onClick={() => onFilterChange("all")}
-      >
-        Все {` (${amountTasks?.all ?? 0})`}
-      </button>
-      <button
-        type="button"
-        className={`${styles.filterBtn} ${todoFilter === "inWork" ? styles.active : ""}`}
-        onClick={() => onFilterChange("inWork")}
-      >
-        В работе {` (${amountTasks?.inWork ?? 0})`}
-      </button>
-      <button
-        type="button"
-        className={`${styles.filterBtn} ${todoFilter === "completed" ? styles.active : ""}`}
-        onClick={() => onFilterChange("completed")}
-      >
-        Выполненные {` (${amountTasks?.completed ?? 0})`}
-      </button>
       <Tab
         label={"Все"}
         count={amountTasks?.all}
         isActive={todoFilter === "all"}
         onFilterChange={() => onFilterChange("all")}
+      />
+      <Tab
+        label={"В Работе"}
+        count={amountTasks?.inWork}
+        isActive={todoFilter === "inWork"}
+        onFilterChange={() => onFilterChange("inWork")}
+      />
+      <Tab
+        label={"Завершенные"}
+        count={amountTasks?.completed}
+        isActive={todoFilter === "completed"}
+        onFilterChange={() => onFilterChange("completed")}
       />
     </div>
   );
