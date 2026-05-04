@@ -4,6 +4,7 @@ import { validateTodoTitle } from "@/utils/validation";
 import { createTodo } from "@/api/todosApi";
 import styles from "./AddTodoForm.module.css";
 import { Input } from "@/ui/Input/Input";
+import { IconButton } from "@/ui/IconButton/IconButton";
 
 interface AddTodoFormProps {
   setLoading: (loading: boolean) => void;
@@ -52,9 +53,9 @@ export function AddTodoForm({
           // isDisabled={true}
           handleEditTitleChange={handleEditTitleChange}
         />
-        <button className={styles.addBtn} type="submit">
+        <IconButton type="submit" ariaLabel="Добавить задачу">
           <AddIcon />
-        </button>
+        </IconButton>
       </div>
       {error && <p className={styles.error}>{error}</p>}
     </form>
