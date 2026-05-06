@@ -1,0 +1,19 @@
+.filterBtn {
+  background: transparent;
+  border: none;
+  padding: 6px 0;
+
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.filterBtn:hover {
+  color: var(--text);
+}
+
+.active {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+}
