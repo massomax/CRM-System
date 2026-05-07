@@ -1,10 +1,15 @@
 import { useState, type JSX } from "react";
-import { CancelIcon, DeleteIcon, EditIcon, SaveIcon } from "@/ui/icons";
 import styles from "./TodoItem.module.css";
 import type { Todo } from "@/types/todos";
 import { deleteTodo, updateTodo } from "@/api/todosApi";
 import { validateTodoTitle } from "@/utils/validation";
-import { IconButton } from "@/ui/IconButton/IconButton";
+import { Button as AntButton } from "antd";
+import {
+  CloseOutlined,
+  DeleteOutlined,
+  FileAddOutlined,
+  FormOutlined,
+} from "@ant-design/icons";
 
 interface TodoItemProps {
   todo: Todo;
@@ -101,20 +106,11 @@ export function TodoItem({
           placeholder={todo.title}
           onChange={handleUpdateTitleChange}
         />
-        <IconButton
-          variant="danger"
-          onClick={handleCancelEdit}
-          ariaLabel="Отменить изменения"
-        >
-          <CancelIcon />
-        </IconButton>
-        <IconButton
-          variant="ghost"
+        <AntButton icon={<CloseOutlined />} onClick={handleCancelEdit} danger />
+        <AntButton
+          icon={<FileAddOutlined />}
           onClick={() => handleSaveTitle(todo.id, editTitle)}
-          ariaLabel="Сохранить изменения"
-        >
-          <SaveIcon />
-        </IconButton>
+        />
       </li>
       {error && <p className={styles.error}>{error}</p>}
     </div>
@@ -127,20 +123,12 @@ export function TodoItem({
         onChange={(e) => handleToggleIsDone(todo.id, e.target.checked)}
       />
       <span className={styles.title}>{todo.title}</span>
-      <IconButton
+      <AntButton
+        icon={<DeleteOutlined />}
         onClick={() => handleDeleteTodo(todo.id)}
-        variant="danger"
-        ariaLabel="Удалить задачу"
-      >
-        <DeleteIcon />
-      </IconButton>
-      <IconButton
-        onClick={handleStartEdit}
-        variant="ghost"
-        ariaLabel="Редактировать задачу"
-      >
-        <EditIcon />
-      </IconButton>
+        danger
+      />
+      <AntButton icon={<FormOutlined />} onClick={handleStartEdit} />
     </li>
   );
 }

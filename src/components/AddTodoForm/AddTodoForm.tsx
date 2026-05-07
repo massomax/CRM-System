@@ -1,63 +1,91 @@
 import { useState, type JSX } from "react";
-import { AddIcon } from "@/ui/icons";
-import { validateTodoTitle } from "@/utils/validation";
 import { createTodo } from "@/api/todosApi";
-import styles from "./AddTodoForm.module.css";
-import { Input } from "@/ui/Input/Input";
-import { IconButton } from "@/ui/IconButton/IconButton";
+import {
+  Button as AntButton,
+  Form,
+  Input as AntInput,
+  Alert,
+  Space,
+} from "antd";
+import { PlusCircleOutlined } from "@ant-design/icons";
 
 interface AddTodoFormProps {
   setLoading: (loading: boolean) => void;
   loadTodos: () => Promise<void>;
 }
+type AddTodoFormValue = {
+  title: string;
+};
 
 export function AddTodoForm({
   setLoading,
   loadTodos,
 }: AddTodoFormProps): JSX.Element {
-  const [newTitle, setNewTitle] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-
-  const handleEditTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTitle(e.target.value);
-    setError(null);
-  };
-
-  const handleAddTodo = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const [form] = Form.useForm<AddTodoFormValue>();
+  const handleAddTodo = async (value: AddTodoFormValue) => {
     try {
-      e.preventDefault();
-      const validatedTitle = validateTodoTitle(newTitle.trim());
+      const clearTitle = value.title.trim();
       setLoading(true);
       setError(null);
 
-      await createTodo({ title: validatedTitle });
+      await createTodo({ title: clearTitle });
 
-      setNewTitle("");
+      form.resetFields();
+
       await loadTodos();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError("Неизвестная ошибка при добавлении задачи");
+        setError("Неизвествная ошибка");
       }
     } finally {
       setLoading(false);
     }
   };
   return (
-    <form onSubmit={handleAddTodo} className={styles.form}>
-      <div className={styles.row}>
-        <Input
-          value={newTitle}
-          placeholder={"Введите текст задачи"}
-          // isDisabled={true}
-          handleEditTitleChange={handleEditTitleChange}
-        />
-        <IconButton type="submit" ariaLabel="Добавить задачу">
-          <AddIcon />
-        </IconButton>
-      </div>
-      {error && <p className={styles.error}>{error}</p>}
-    </form>
+    <>
+      <Form<AddTodoFormValue>
+        onFinish={handleAddTodo}
+        form={form}
+        layout="vertical"
+        style={{
+          width: "100%",
+          maxWidth: 640,
+        }}
+      >
+        <Space.Compact block>
+          <Form.Item
+            name="title"
+            style={{
+              width: "100%",
+            }}
+            rules={[
+              {
+                required: true,
+                message: "Это поле не может быть пустым",
+              },
+              {
+                min: 2,
+                message: "Минимальная длина текста 2 символа",
+              },
+              {
+                max: 64,
+                message: "Максимальная длина текста 64 символа",
+              },
+            ]}
+          >
+            <AntInput />
+          </Form.Item>
+          <AntButton
+            type="primary"
+            htmlType="submit"
+            icon={<PlusCircleOutlined />}
+          />
+        </Space.Compact>
+      </Form>
+      {error && <Alert type="error" title={error} />}
+    </>
   );
 }
