@@ -1,8 +1,7 @@
 import type { FilterType, TodoInfo } from "@/types/todos";
-import styles from "./TodoFilters.module.css";
 import type { JSX } from "react";
 
-import { Tab } from "@/ui/Tab/Tab";
+import { Segmented } from "antd";
 
 interface TodoFiltersProps {
   todoFilter: FilterType;
@@ -11,30 +10,25 @@ interface TodoFiltersProps {
 }
 
 export function TodoFilters({
-  todoFilter,
   amountTasks,
   onFilterChange,
 }: TodoFiltersProps): JSX.Element {
   return (
-    <div className={styles.filters}>
-      <Tab
-        label={"Все"}
-        count={amountTasks?.all}
-        isActive={todoFilter === "all"}
-        onFilterChange={() => onFilterChange("all")}
-      />
-      <Tab
-        label={"В Работе"}
-        count={amountTasks?.inWork}
-        isActive={todoFilter === "inWork"}
-        onFilterChange={() => onFilterChange("inWork")}
-      />
-      <Tab
-        label={"Завершенные"}
-        count={amountTasks?.completed}
-        isActive={todoFilter === "completed"}
-        onFilterChange={() => onFilterChange("completed")}
-      />
-    </div>
+    <Segmented<FilterType>
+      options={[
+        {
+          label: <div>Все {amountTasks?.all}</div>,
+          value: "all",
+        },
+        { label: <div>В Работе {amountTasks?.inWork}</div>, value: "inWork" },
+        {
+          label: <div>Завершенные {amountTasks?.completed}</div>,
+          value: "completed",
+        },
+      ]}
+      onChange={(value) => onFilterChange(value)}
+      style={{ width: "100%" }}
+      block
+    />
   );
 }

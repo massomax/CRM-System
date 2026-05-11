@@ -76,7 +76,7 @@ export function AddTodoForm({
               },
             ]}
           >
-            <AntInput />
+            <AntInput placeholder="Введите текст задачи" />
           </Form.Item>
           <AntButton
             type="primary"

@@ -3,7 +3,7 @@ import styles from "./TodoItem.module.css";
 import type { Todo } from "@/types/todos";
 import { deleteTodo, updateTodo } from "@/api/todosApi";
 import { validateTodoTitle } from "@/utils/validation";
-import { Button as AntButton } from "antd";
+import { Button as AntButton, Checkbox, Input } from "antd";
 import {
   CloseOutlined,
   DeleteOutlined,
@@ -26,8 +26,12 @@ export function TodoItem({
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleUpdateTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditTitle(e.target.value);
+  const handleUpdateTitleChange = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    setEditTitle(e.currentTarget.value);
     setError(null);
   };
 
@@ -99,11 +103,9 @@ export function TodoItem({
   return isEdit ? (
     <div>
       <li className={styles.item}>
-        <input
+        <Input
           type="text"
-          className={styles.editInput}
           value={editTitle}
-          placeholder={todo.title}
           onChange={handleUpdateTitleChange}
         />
         <AntButton icon={<CloseOutlined />} onClick={handleCancelEdit} danger />
@@ -116,9 +118,7 @@ export function TodoItem({
     </div>
   ) : (
     <li className={styles.item}>
-      <input
-        type="checkbox"
-        className={styles.checkbox}
+      <Checkbox
         checked={todo.isDone}
         onChange={(e) => handleToggleIsDone(todo.id, e.target.checked)}
       />
