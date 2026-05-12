@@ -1,33 +1,40 @@
-import {
-  type FilterType,
-  type MetaResponse,
-  type Todo,
-  type TodoInfo,
-  type TodoRequest,
+import axios from "axios";
+import type {
+  FilterType,
+  MetaResponse,
+  Todo,
+  TodoInfo,
+  TodoRequest,
 } from "@/types/todos";
-import { apiRequest } from "./http";
 
-export const getTodos = (filter?: FilterType): Promise<MetaResponse<Todo, TodoInfo>> => {
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+});
+
+export const getTodos = async (
+  filter?: FilterType,
+): Promise<MetaResponse<Todo, TodoInfo>> => {
   const params = filter ? `?filter=${filter}` : "";
-  return apiRequest<MetaResponse<Todo, TodoInfo>>("/todos" + params);
+  const response = await api.get<MetaResponse<Todo, TodoInfo>>(
+    `/todos${params}`,
+  );
+  return response.data;
 };
 
-export const createTodo = (todo: TodoRequest): Promise<Todo> => {
-  return apiRequest<Todo, TodoRequest>("/todos", {
-    method: "POST",
-    body: todo,
-  });
+export const createTodo = async (todo: TodoRequest): Promise<Todo> => {
+  const response = await api.post<Todo>(`/todos`, todo);
+  return response.data;
 };
 
-export const deleteTodo = (id: Todo["id"]): Promise<void> => {
-  return apiRequest<void>(`/todos/${id}`, {
-    method: "DELETE",
-  });
+export const deleteTodo = async (id: Todo["id"]): Promise<string> => {
+  const response = await api.delete<string>(`/todos/${id}`);
+  return response.data;
 };
 
-export const updateTodo = (id: Todo["id"], todo : TodoRequest): Promise<Todo> => {
-  return apiRequest<Todo, TodoRequest>(`/todos/${id}`, {
-    method: "PUT",
-    body: todo,
-  });
-}
+export const updateTodo = async (
+  id: Todo["id"],
+  todo: TodoRequest,
+): Promise<Todo> => {
+  const response = await api.put<Todo>(`/todos/${id}`, todo);
+  return response.data;
+};
