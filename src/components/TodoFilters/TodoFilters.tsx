@@ -1,20 +1,24 @@
 import type { FilterType, TodoInfo } from "@/types/todos";
-import type { JSX } from "react";
+import { type JSX } from "react";
 
 import { Segmented } from "antd";
+import { useSearchParams } from "react-router";
 
 interface TodoFiltersProps {
-  todoFilter: FilterType;
   amountTasks?: TodoInfo;
-  onFilterChange: (filter: FilterType) => void;
 }
 
-export function TodoFilters({
-  amountTasks,
-  onFilterChange,
-}: TodoFiltersProps): JSX.Element {
+export function TodoFilters({ amountTasks }: TodoFiltersProps): JSX.Element {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const currentFilter: FilterType = searchParams.get("filter") as FilterType;
+
+  const handleFilterChange = (value: FilterType) => {
+    setSearchParams({ filter: value });
+  };
   return (
     <Segmented<FilterType>
+      value={currentFilter}
       options={[
         {
           label: <div>Все {amountTasks?.all}</div>,
@@ -26,7 +30,7 @@ export function TodoFilters({
           value: "completed",
         },
       ]}
-      onChange={(value) => onFilterChange(value)}
+      onChange={(value) => handleFilterChange(value)}
       style={{ width: "100%" }}
       block
     />

@@ -1,5 +1,4 @@
-import { useState, type JSX } from "react";
-import { createTodo } from "@/api/todosApi";
+import { type JSX } from "react";
 import {
   Button as AntButton,
   Form,
@@ -8,46 +7,28 @@ import {
   Space,
 } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
+import { useActionData, useNavigation, useSubmit } from "react-router";
 
-interface AddTodoFormProps {
-  setLoading: (loading: boolean) => void;
-  loadTodos: () => Promise<void>;
-}
 type AddTodoFormValue = {
   title: string;
 };
 
-export function AddTodoForm({
-  setLoading,
-  loadTodos,
-}: AddTodoFormProps): JSX.Element {
-  const [error, setError] = useState<string | null>(null);
+export function AddTodoForm(): JSX.Element {
   const [form] = Form.useForm<AddTodoFormValue>();
-  const handleAddTodo = async (value: AddTodoFormValue) => {
-    try {
-      const clearTitle = value.title.trim();
-      setLoading(true);
-      setError(null);
+  const navigation = useNavigation();
+  const isLoading = navigation.state === "submitting";
+  const actionData = useActionData();
+  const submit = useSubmit();
 
-      await createTodo({ title: clearTitle });
-
-      form.resetFields();
-
-      await loadTodos();
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Неизвествная ошибка");
-      }
-    } finally {
-      setLoading(false);
-    }
+  const handleAddTodos = async (value: AddTodoFormValue) => {
+    const result = submit({ ...value, intent: "create" }, { method: "post" });
+    form.resetFields();
+    return result;
   };
   return (
     <>
       <Form<AddTodoFormValue>
-        onFinish={handleAddTodo}
+        onFinish={handleAddTodos}
         form={form}
         layout="vertical"
         style={{
@@ -82,10 +63,11 @@ export function AddTodoForm({
             type="primary"
             htmlType="submit"
             icon={<PlusCircleOutlined />}
+            disabled={isLoading}
           />
         </Space.Compact>
       </Form>
-      {error && <Alert type="error" title={error} />}
+      {actionData?.error && <Alert type="error" title={actionData?.error} />}
     </>
   );
 }

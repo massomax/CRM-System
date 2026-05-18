@@ -1,134 +1,133 @@
 import { useState, type JSX } from "react";
 import styles from "./TodoItem.module.css";
 import type { Todo } from "@/types/todos";
-import { deleteTodo, updateTodo } from "@/api/todosApi";
-import { validateTodoTitle } from "@/utils/validation";
-import { Button as AntButton, Checkbox, Input } from "antd";
+import { Button as AntButton, Checkbox, Form, Input } from "antd";
 import {
   CloseOutlined,
   DeleteOutlined,
   FileAddOutlined,
   FormOutlined,
 } from "@ant-design/icons";
+import { useActionData, useNavigation, useSubmit } from "react-router";
+import { useForm } from "antd/es/form/Form";
 
 interface TodoItemProps {
   todo: Todo;
-  setLoading: (loading: boolean) => void;
-  loadTodos: () => Promise<void>;
 }
 
-export function TodoItem({
-  todo,
-  setLoading,
-  loadTodos,
-}: TodoItemProps): JSX.Element {
-  const [editTitle, setEditTitle] = useState<string>("");
+export function TodoItem({ todo }: TodoItemProps): JSX.Element {
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [form] = useForm();
+  const navigation = useNavigation();
+  const actionData = useActionData();
+  const isLoading = navigation.state === "submitting";
+  const submit = useSubmit();
 
-  const handleUpdateTitleChange = (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    setEditTitle(e.currentTarget.value);
-    setError(null);
+  const handleDeleteTodos = async (id: Todo["id"]) => {
+    submit(
+      { id, intent: "delete" },
+      {
+        method: "post",
+      },
+    );
   };
 
-  const handleDeleteTodo = async (id: Todo["id"]) => {
-    try {
-      setLoading(true);
-      setError(null);
-      await deleteTodo(id);
-      await loadTodos();
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Неизвестная ошибка при удалении задачи");
-      }
-    } finally {
-      setLoading(false);
-    }
+  const handleSaveTitles = async (id: Todo["id"], newTitle: string) => {
+    submit(
+      {
+        id,
+        title: newTitle || "",
+        intent: "update",
+      },
+      { method: "post" },
+    );
   };
 
-  const handleSaveTitle = async (id: Todo["id"], newTitle: string) => {
-    try {
-      const validatedTitle = validateTodoTitle(newTitle.trim());
-      setLoading(true);
-      setError(null);
-      await updateTodo(id, { title: validatedTitle });
-      await loadTodos();
-      setEditTitle("");
-      setIsEdit(false);
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Неизвестная ошибка при обновлении задачи");
-      }
-    } finally {
-      setLoading(false);
-    }
+  const handleToggleIsDones = async (id: Todo["id"], isDone: boolean) => {
+    submit(
+      {
+        id,
+        completed: isDone,
+        intent: "update",
+      },
+      { method: "post" },
+    );
   };
 
-  const handleToggleIsDone = async (id: Todo["id"], isDone: boolean) => {
-    try {
-      setLoading(true);
-      setError(null);
-      await updateTodo(id, { isDone });
-      await loadTodos();
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Неизвестная ошибка при обновлении статуса задачи");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setError(null);
+  const onFinish = (values: { newTitle: string }) => {
+    handleSaveTitles(todo.id, values.newTitle);
     setIsEdit(false);
   };
 
+  const handleCancelEdit = () => {
+    setIsEdit(false);
+    form.resetFields();
+  };
+
   const handleStartEdit = () => {
-    setError(null);
     setIsEdit(true);
-    setEditTitle(todo.title);
   };
 
   return isEdit ? (
     <div>
       <li className={styles.item}>
-        <Input
-          type="text"
-          value={editTitle}
-          onChange={handleUpdateTitleChange}
-        />
+        <Form
+          onFinish={onFinish}
+          form={form}
+          initialValues={{ newTitle: todo.title }}
+          style={{
+            width: "100%",
+            maxWidth: 640,
+            padding: 0,
+          }}
+        >
+          <Form.Item
+            name="newTitle"
+            rules={[
+              {
+                required: true,
+                message: "Это поле не может быть пустым",
+              },
+              {
+                min: 2,
+                message: "Минимальная длина текста 2 символа",
+              },
+              {
+                max: 64,
+                message: "Максимальная длина текста 64 символа",
+              },
+            ]}
+          >
+            <Input type="text" />
+          </Form.Item>
+        </Form>
         <AntButton icon={<CloseOutlined />} onClick={handleCancelEdit} danger />
         <AntButton
+          htmlType="submit"
           icon={<FileAddOutlined />}
-          onClick={() => handleSaveTitle(todo.id, editTitle)}
+          onClick={() => form.submit()}
+          disabled={isLoading}
         />
       </li>
-      {error && <p className={styles.error}>{error}</p>}
+      {actionData?.error && <p className={styles.error}>{actionData?.error}</p>}
     </div>
   ) : (
     <li className={styles.item}>
       <Checkbox
         checked={todo.isDone}
-        onChange={(e) => handleToggleIsDone(todo.id, e.target.checked)}
+        onChange={(e) => handleToggleIsDones(todo.id, e.target.checked)}
       />
       <span className={styles.title}>{todo.title}</span>
       <AntButton
         icon={<DeleteOutlined />}
-        onClick={() => handleDeleteTodo(todo.id)}
+        onClick={() => handleDeleteTodos(todo.id)}
         danger
       />
-      <AntButton icon={<FormOutlined />} onClick={handleStartEdit} />
+      <AntButton
+        icon={<FormOutlined />}
+        onClick={handleStartEdit}
+        disabled={isLoading}
+      />
     </li>
   );
 }

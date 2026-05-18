@@ -5,24 +5,13 @@ import type { Todo } from "@/types/todos";
 
 interface TodoListProps {
   todos: Todo[];
-  setLoading: (loading: boolean) => void;
-  loadTodos: () => Promise<void>;
 }
 
-export function TodoList({
-  todos,
-  setLoading,
-  loadTodos,
-}: TodoListProps): JSX.Element {
+export function TodoList({ todos }: TodoListProps): JSX.Element {
   return (
     <ul className={styles.list}>
       {todos.map((todo) => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-          setLoading={setLoading}
-          loadTodos={loadTodos}
-        />
+        <TodoItem key={todo.id} todo={todo} />
       ))}
     </ul>
   );
