@@ -41,6 +41,7 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
       },
       { method: "post" },
     );
+    form.resetFields();
   };
 
   const handleToggleIsDones = async (id: Todo["id"], isDone: boolean) => {
@@ -65,6 +66,7 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
   };
 
   const handleStartEdit = () => {
+    form.resetFields();
     setIsEdit(true);
   };
 

@@ -14,10 +14,11 @@ const api = axios.create({
 export const getTodos = async (
   filter?: FilterType,
 ): Promise<MetaResponse<Todo, TodoInfo>> => {
-  const params = filter ? `?filter=${filter}` : "";
-  const response = await api.get<MetaResponse<Todo, TodoInfo>>(
-    `/todos${params}`,
-  );
+  const response = await api.get<MetaResponse<Todo, TodoInfo>>(`/todos`, {
+    params: {
+      filter,
+    },
+  });
   return response.data;
 };
 
