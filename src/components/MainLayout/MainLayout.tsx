@@ -23,15 +23,15 @@ const items: ItemType[] = [
 ];
 
 export function MainLayout(): JSX.Element {
-  const [collapsed, setCollapsed] = useState<Todo["isDone"]>(false);
+  const [isCollapsed, setIsCollapsed] = useState<Todo["isDone"]>(false);
   const location = useLocation();
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sider
         collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
+        collapsed={isCollapsed}
+        onCollapse={(value) => setIsCollapsed(value)}
       >
         <Menu
           theme="dark"
