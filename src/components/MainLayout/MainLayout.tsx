@@ -1,9 +1,10 @@
 import { Link, Outlet, useLocation } from "react-router";
-import React, { useState } from "react";
+import { useState, type JSX } from "react";
 
 import { ContainerOutlined, UserOutlined } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
 import type { MenuItemType } from "antd/es/menu/interface";
+import type { Todo } from "@/types/todos";
 const { Content, Sider } = Layout;
 
 type ItemType = MenuItemType;
@@ -21,8 +22,8 @@ const items: ItemType[] = [
   },
 ];
 
-export const MainLayout: React.FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
+export function MainLayout(): JSX.Element {
+  const [collapsed, setCollapsed] = useState<Todo["isDone"]>(false);
   const location = useLocation();
 
   return (
@@ -47,4 +48,4 @@ export const MainLayout: React.FC = () => {
       </Layout>
     </Layout>
   );
-};
+}

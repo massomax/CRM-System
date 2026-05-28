@@ -1,7 +1,8 @@
 import { useRouteError, isRouteErrorResponse, useNavigate } from "react-router";
 import { Button, Result } from "antd";
+import type { JSX } from "react";
 
-export function ErrorBoundary() {
+export function ErrorBoundary(): JSX.Element {
   const error = useRouteError();
   const navigate = useNavigate();
 

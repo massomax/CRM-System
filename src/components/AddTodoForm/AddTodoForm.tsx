@@ -1,13 +1,9 @@
 import { type JSX } from "react";
-import {
-  Button as AntButton,
-  Form,
-  Input as AntInput,
-  Alert,
-  Space,
-} from "antd";
+import { Button, Form, Input, Alert, Space } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
-import { useActionData, useNavigation, useSubmit } from "react-router";
+import { useActionData, useNavigation, useRevalidator } from "react-router";
+import { createTodo } from "@/api/todosApi";
+import type { Todo } from "@/types/todos";
 
 type AddTodoFormValue = {
   title: string;
@@ -18,17 +14,26 @@ export function AddTodoForm(): JSX.Element {
   const navigation = useNavigation();
   const isLoading = navigation.state === "submitting";
   const actionData = useActionData();
-  const submit = useSubmit();
+  const revalidator = useRevalidator();
 
-  const handleAddTodos = async (value: AddTodoFormValue) => {
-    const result = submit({ ...value, intent: "create" }, { method: "post" });
-    form.resetFields();
-    return result;
+  const handleAddTodo = async (value: AddTodoFormValue): Promise<Todo> => {
+    try {
+      const result = await createTodo({ title: value.title });
+      form.resetFields();
+      revalidator.revalidate();
+      return result;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      } else {
+        throw new Error("Неизвестная ошибка");
+      }
+    }
   };
   return (
     <>
       <Form<AddTodoFormValue>
-        onFinish={handleAddTodos}
+        onFinish={handleAddTodo}
         form={form}
         layout="vertical"
         style={{
@@ -57,9 +62,9 @@ export function AddTodoForm(): JSX.Element {
               },
             ]}
           >
-            <AntInput placeholder="Введите текст задачи" />
+            <Input placeholder="Введите текст задачи" />
           </Form.Item>
-          <AntButton
+          <Button
             type="primary"
             htmlType="submit"
             icon={<PlusCircleOutlined />}

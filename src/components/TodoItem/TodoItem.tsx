@@ -1,15 +1,16 @@
 import { useState, type JSX } from "react";
 import styles from "./TodoItem.module.css";
-import type { Todo } from "@/types/todos";
-import { Button as AntButton, Checkbox, Form, Input } from "antd";
+import type { Todo, TodoRequest } from "@/types/todos";
+import { Button, Checkbox, Form, Input } from "antd";
 import {
   CloseOutlined,
   DeleteOutlined,
   FileAddOutlined,
   FormOutlined,
 } from "@ant-design/icons";
-import { useActionData, useNavigation, useSubmit } from "react-router";
+import { useActionData, useNavigation, useRevalidator } from "react-router";
 import { useForm } from "antd/es/form/Form";
+import { deleteTodo, updateTodo } from "@/api/todosApi";
 
 interface TodoItemProps {
   todo: Todo;
@@ -21,43 +22,60 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
   const navigation = useNavigation();
   const actionData = useActionData();
   const isLoading = navigation.state === "submitting";
-  const submit = useSubmit();
+  const revalidator = useRevalidator();
 
-  const handleDeleteTodos = async (id: Todo["id"]) => {
-    submit(
-      { id, intent: "delete" },
-      {
-        method: "post",
-      },
-    );
+  const handleDeleteTodo = async (id: Todo["id"]) => {
+    try {
+      await deleteTodo(id);
+      form.resetFields();
+      revalidator.revalidate();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      } else {
+        throw new Error("Неизвестная ошибка");
+      }
+    }
   };
 
-  const handleSaveTitles = async (id: Todo["id"], newTitle: string) => {
-    submit(
-      {
-        id,
-        title: newTitle || "",
-        intent: "update",
-      },
-      { method: "post" },
-    );
-    form.resetFields();
+  const handleSaveTitle = async (
+    id: Todo["id"],
+    newTitle: TodoRequest["title"],
+  ): Promise<Todo> => {
+    try {
+      const result = await updateTodo(id, { title: newTitle });
+      form.resetFields();
+      revalidator.revalidate();
+      setIsEdit(false);
+      return result;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      } else {
+        throw new Error("Неизвестная ошибка");
+      }
+    }
+  };
+  const handleToggleIsDone = async (
+    id: Todo["id"],
+    isDone: boolean,
+  ): Promise<Todo> => {
+    try {
+      const result = await updateTodo(id, { isDone });
+      form.resetFields();
+      revalidator.revalidate();
+      return result;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      } else {
+        throw new Error("Неизвестная ошибка");
+      }
+    }
   };
 
-  const handleToggleIsDones = async (id: Todo["id"], isDone: boolean) => {
-    submit(
-      {
-        id,
-        completed: isDone,
-        intent: "update",
-      },
-      { method: "post" },
-    );
-  };
-
-  const onFinish = (values: { newTitle: string }) => {
-    handleSaveTitles(todo.id, values.newTitle);
-    setIsEdit(false);
+  const onFinish = async (values: { newTitle: string }) => {
+    await handleSaveTitle(todo.id, values.newTitle);
   };
 
   const handleCancelEdit = () => {
@@ -73,7 +91,7 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
   return isEdit ? (
     <div>
       <li className={styles.item}>
-        <Form
+        <Form<{ newTitle: string }>
           onFinish={onFinish}
           form={form}
           initialValues={{ newTitle: todo.title }}
@@ -103,8 +121,8 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
             <Input type="text" />
           </Form.Item>
         </Form>
-        <AntButton icon={<CloseOutlined />} onClick={handleCancelEdit} danger />
-        <AntButton
+        <Button icon={<CloseOutlined />} onClick={handleCancelEdit} danger />
+        <Button
           htmlType="submit"
           icon={<FileAddOutlined />}
           onClick={() => form.submit()}
@@ -117,15 +135,15 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
     <li className={styles.item}>
       <Checkbox
         checked={todo.isDone}
-        onChange={(e) => handleToggleIsDones(todo.id, e.target.checked)}
+        onChange={(e) => handleToggleIsDone(todo.id, e.target.checked)}
       />
       <span className={styles.title}>{todo.title}</span>
-      <AntButton
+      <Button
         icon={<DeleteOutlined />}
-        onClick={() => handleDeleteTodos(todo.id)}
+        onClick={() => handleDeleteTodo(todo.id)}
         danger
       />
-      <AntButton
+      <Button
         icon={<FormOutlined />}
         onClick={handleStartEdit}
         disabled={isLoading}
