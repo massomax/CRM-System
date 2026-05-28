@@ -8,8 +8,10 @@ import type { Todo } from "@/types/todos";
 type AddTodoFormValue = {
   title: string;
 };
-
-export function AddTodoForm(): JSX.Element {
+interface AddTodoFormProps {
+  setIsLoading: (isLoading: boolean) => void;
+}
+export function AddTodoForm({ setIsLoading }: AddTodoFormProps): JSX.Element {
   const [form] = Form.useForm<AddTodoFormValue>();
   const navigation = useNavigation();
   const isLoading = navigation.state === "submitting";
@@ -18,6 +20,7 @@ export function AddTodoForm(): JSX.Element {
 
   const handleAddTodo = async (value: AddTodoFormValue): Promise<Todo> => {
     try {
+      setIsLoading(true);
       const result = await createTodo({ title: value.title });
       form.resetFields();
       revalidator.revalidate();
@@ -28,6 +31,8 @@ export function AddTodoForm(): JSX.Element {
       } else {
         throw new Error("Неизвестная ошибка");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
   return (

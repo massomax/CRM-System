@@ -14,9 +14,10 @@ import { deleteTodo, updateTodo } from "@/api/todosApi";
 
 interface TodoItemProps {
   todo: Todo;
+  setIsLoading: (isLoading: boolean) => void;
 }
 
-export function TodoItem({ todo }: TodoItemProps): JSX.Element {
+export function TodoItem({ todo, setIsLoading }: TodoItemProps): JSX.Element {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [form] = useForm();
   const navigation = useNavigation();
@@ -26,6 +27,7 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
 
   const handleDeleteTodo = async (id: Todo["id"]) => {
     try {
+      setIsLoading(true);
       await deleteTodo(id);
       form.resetFields();
       revalidator.revalidate();
@@ -35,6 +37,8 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
       } else {
         throw new Error("Неизвестная ошибка");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -43,6 +47,7 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
     newTitle: TodoRequest["title"],
   ): Promise<Todo> => {
     try {
+      setIsLoading(true);
       const result = await updateTodo(id, { title: newTitle });
       form.resetFields();
       revalidator.revalidate();
@@ -54,6 +59,8 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
       } else {
         throw new Error("Неизвестная ошибка");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
   const handleToggleIsDone = async (
@@ -61,6 +68,7 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
     isDone: boolean,
   ): Promise<Todo> => {
     try {
+      setIsLoading(true);
       const result = await updateTodo(id, { isDone });
       form.resetFields();
       revalidator.revalidate();
@@ -71,6 +79,8 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
       } else {
         throw new Error("Неизвестная ошибка");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 

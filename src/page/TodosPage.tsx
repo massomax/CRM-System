@@ -6,17 +6,16 @@ import { type Todo, type TodoInfo, type MetaResponse } from "@/types/todos";
 
 import { TodoFilters } from "@/components/TodoFilters/TodoFilters";
 import { TodoList } from "@/components/TodoList/TodoList";
-import { useLoaderData, useNavigation, useRevalidator } from "react-router";
-import { useEffect, type JSX } from "react";
+import { useLoaderData, useRevalidator } from "react-router";
+import { useEffect, useState, type JSX } from "react";
 import { Flex } from "antd";
 import { Content } from "antd/es/layout/layout";
 
 export function TodosPage(): JSX.Element {
   const data: MetaResponse<Todo, TodoInfo> = useLoaderData();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const todos = data.data;
   const amountTasks = data.info;
-  const navigation = useNavigation();
-  const isLoading = navigation.state === "loading";
   const revalidator = useRevalidator();
 
   useEffect(() => {
@@ -47,14 +46,14 @@ export function TodosPage(): JSX.Element {
         style={{ width: "100%", maxWidth: 640 }}
       >
         <h1 className={styles.title}>Todo</h1>
-        <AddTodoForm />
+        <AddTodoForm setIsLoading={setIsLoading} />
         <TodoFilters amountTasks={amountTasks} />
         {isLoading ? (
           <p>Загрузка задач...</p>
         ) : todos.length === 0 ? (
           <p>Задачи не найдены</p>
         ) : (
-          <TodoList todos={todos} />
+          <TodoList todos={todos} setIsLoading={setIsLoading} />
         )}
       </Flex>
     </Content>
