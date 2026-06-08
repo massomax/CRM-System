@@ -51,6 +51,13 @@ export function TodosPage(): JSX.Element {
     loadTodos();
   }, [loadTodos]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadTodos();
+    }, 5000);
+    return clearInterval(interval);
+  });
+
   const handleFilterChange = (filter: FilterType) => {
     setSearchParams({ filter });
   };
