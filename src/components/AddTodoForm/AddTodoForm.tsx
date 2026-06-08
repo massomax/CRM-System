@@ -1,35 +1,40 @@
 import { type JSX } from "react";
-import { Button, Form, Input, Alert, Space } from "antd";
+import { Alert, Button, Form, Input, Space } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
-import { useActionData, useNavigation, useRevalidator } from "react-router";
 import { createTodo } from "@/api/todosApi";
-import type { Todo } from "@/types/todos";
+import { todoTitleRules } from "@/utils/todoValidationRules";
 
 type AddTodoFormValue = {
   title: string;
 };
 interface AddTodoFormProps {
+  isLoading: boolean;
+  error: string | null;
   setIsLoading: (isLoading: boolean) => void;
+  setError: (error: string | null) => void;
+  loadTodos: () => Promise<void>;
 }
-export function AddTodoForm({ setIsLoading }: AddTodoFormProps): JSX.Element {
+export function AddTodoForm({
+  isLoading,
+  error,
+  setIsLoading,
+  setError,
+  loadTodos,
+}: AddTodoFormProps): JSX.Element {
   const [form] = Form.useForm<AddTodoFormValue>();
-  const navigation = useNavigation();
-  const isLoading = navigation.state === "submitting";
-  const actionData = useActionData();
-  const revalidator = useRevalidator();
 
-  const handleAddTodo = async (value: AddTodoFormValue): Promise<Todo> => {
+  const handleAddTodo = async (value: AddTodoFormValue): Promise<void> => {
     try {
       setIsLoading(true);
-      const result = await createTodo({ title: value.title });
+      setError(null);
+      await createTodo({ title: value.title.trim() });
       form.resetFields();
-      revalidator.revalidate();
-      return result;
+      await loadTodos();
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(error.message);
+        setError(error.message);
       } else {
-        throw new Error("Неизвестная ошибка");
+        setError("Неизвестная ошибка");
       }
     } finally {
       setIsLoading(false);
@@ -52,20 +57,7 @@ export function AddTodoForm({ setIsLoading }: AddTodoFormProps): JSX.Element {
             style={{
               width: "100%",
             }}
-            rules={[
-              {
-                required: true,
-                message: "Это поле не может быть пустым",
-              },
-              {
-                min: 2,
-                message: "Минимальная длина текста 2 символа",
-              },
-              {
-                max: 64,
-                message: "Максимальная длина текста 64 символа",
-              },
-            ]}
+            rules={todoTitleRules}
           >
             <Input placeholder="Введите текст задачи" />
           </Form.Item>
@@ -77,7 +69,7 @@ export function AddTodoForm({ setIsLoading }: AddTodoFormProps): JSX.Element {
           />
         </Space.Compact>
       </Form>
-      {actionData?.error && <Alert type="error" title={actionData?.error} />}
+      {error && <Alert type="error" title={error} />}
     </>
   );
 }

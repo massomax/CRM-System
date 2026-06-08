@@ -1,163 +1,178 @@
 import { useState, type JSX } from "react";
 import styles from "./TodoItem.module.css";
-import type { Todo, TodoRequest } from "@/types/todos";
-import { Button, Checkbox, Form, Input } from "antd";
+import type { Todo } from "@/types/todos";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Space,
+  type CheckboxChangeEvent,
+} from "antd";
 import {
   CloseOutlined,
   DeleteOutlined,
   FileAddOutlined,
   FormOutlined,
 } from "@ant-design/icons";
-import { useActionData, useNavigation, useRevalidator } from "react-router";
-import { useForm } from "antd/es/form/Form";
 import { deleteTodo, updateTodo } from "@/api/todosApi";
+import { todoTitleRules } from "@/utils/todoValidationRules";
 
 interface TodoItemProps {
   todo: Todo;
-  setIsLoading: (isLoading: boolean) => void;
+  // isLoading: boolean;
+  // setIsLoading: (isLoading: boolean) => void;
+  loadTodos: () => Promise<void>;
 }
 
-export function TodoItem({ todo, setIsLoading }: TodoItemProps): JSX.Element {
+export function TodoItem({
+  todo,
+  // isLoading,
+  // setIsLoading,
+  loadTodos,
+}: TodoItemProps): JSX.Element {
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [form] = useForm();
-  const navigation = useNavigation();
-  const actionData = useActionData();
-  const isLoading = navigation.state === "submitting";
-  const revalidator = useRevalidator();
+  const [form] = Form.useForm<{ newTitle: string }>();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleDeleteTodo = async (id: Todo["id"]) => {
+  const handleDeleteTodo = async (): Promise<void> => {
     try {
       setIsLoading(true);
-      await deleteTodo(id);
-      form.resetFields();
-      revalidator.revalidate();
+      setError(null);
+      await deleteTodo(todo.id);
+      await loadTodos();
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(error.message);
+        setError(error.message);
       } else {
-        throw new Error("Неизвестная ошибка");
+        setError("Неизвестная ошибка");
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSaveTitle = async (
-    id: Todo["id"],
-    newTitle: TodoRequest["title"],
-  ): Promise<Todo> => {
+  const handleSaveTitle = async (newTitle: string): Promise<void> => {
     try {
       setIsLoading(true);
-      const result = await updateTodo(id, { title: newTitle });
+      setError(null);
+
+      await updateTodo(todo.id, { title: newTitle.trim() });
+
+      await loadTodos();
+
       form.resetFields();
-      revalidator.revalidate();
-      setIsEdit(false);
-      return result;
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(error.message);
+        setError(error.message);
       } else {
-        throw new Error("Неизвестная ошибка");
+        setError("Неизвестная ошибка");
       }
     } finally {
       setIsLoading(false);
     }
   };
   const handleToggleIsDone = async (
-    id: Todo["id"],
-    isDone: boolean,
-  ): Promise<Todo> => {
+    event: CheckboxChangeEvent,
+  ): Promise<void> => {
     try {
       setIsLoading(true);
-      const result = await updateTodo(id, { isDone });
-      form.resetFields();
-      revalidator.revalidate();
-      return result;
+      setError(null);
+      await updateTodo(todo.id, { isDone: event.target.checked });
+      await loadTodos();
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(error.message);
+        setError(error.message);
       } else {
-        throw new Error("Неизвестная ошибка");
+        setError("Неизвестная ошибка");
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const onFinish = async (values: { newTitle: string }) => {
-    await handleSaveTitle(todo.id, values.newTitle);
+  const onFinish = async (values: { newTitle: string }): Promise<void> => {
+    await handleSaveTitle(values.newTitle);
   };
 
   const handleCancelEdit = () => {
     setIsEdit(false);
     form.resetFields();
+    setError(null);
   };
 
   const handleStartEdit = () => {
-    form.resetFields();
+    form.setFieldsValue({ newTitle: todo.title });
     setIsEdit(true);
+    setError(null);
   };
 
   return isEdit ? (
-    <div>
-      <li className={styles.item}>
-        <Form<{ newTitle: string }>
-          onFinish={onFinish}
-          form={form}
-          initialValues={{ newTitle: todo.title }}
-          style={{
-            width: "100%",
-            maxWidth: 640,
-            padding: 0,
-          }}
-        >
+    <li className={styles.item}>
+      <Form<{ newTitle: string }>
+        onFinish={onFinish}
+        form={form}
+        initialValues={{ newTitle: todo.title }}
+        style={{
+          width: "100%",
+          maxWidth: 640,
+          padding: 0,
+        }}
+        layout="vertical"
+      >
+        <Space.Compact block>
           <Form.Item
             name="newTitle"
-            rules={[
-              {
-                required: true,
-                message: "Это поле не может быть пустым",
-              },
-              {
-                min: 2,
-                message: "Минимальная длина текста 2 символа",
-              },
-              {
-                max: 64,
-                message: "Максимальная длина текста 64 символа",
-              },
-            ]}
+            rules={todoTitleRules}
+            style={{
+              width: "100%",
+            }}
           >
             <Input type="text" />
           </Form.Item>
-        </Form>
-        <Button icon={<CloseOutlined />} onClick={handleCancelEdit} danger />
-        <Button
-          htmlType="submit"
-          icon={<FileAddOutlined />}
-          onClick={() => form.submit()}
-          disabled={isLoading}
-        />
-      </li>
-      {actionData?.error && <p className={styles.error}>{actionData?.error}</p>}
-    </div>
+
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            onClick={handleCancelEdit}
+            style={{
+              marginInline: 4,
+            }}
+            disabled={isLoading}
+            danger
+          />
+          <Button
+            htmlType="submit"
+            icon={<FileAddOutlined />}
+            disabled={isLoading}
+            style={{
+              marginInline: 4,
+            }}
+          />
+        </Space.Compact>
+      </Form>
+      {error && <p className={styles.error}>{error}</p>}
+    </li>
   ) : (
     <li className={styles.item}>
-      <Checkbox
-        checked={todo.isDone}
-        onChange={(e) => handleToggleIsDone(todo.id, e.target.checked)}
-      />
+      <Checkbox checked={todo.isDone} onChange={handleToggleIsDone} />
       <span className={styles.title}>{todo.title}</span>
       <Button
+        htmlType="button"
         icon={<DeleteOutlined />}
-        onClick={() => handleDeleteTodo(todo.id)}
+        onClick={handleDeleteTodo}
+        disabled={isLoading}
         danger
       />
       <Button
+        htmlType="button"
         icon={<FormOutlined />}
         onClick={handleStartEdit}
         disabled={isLoading}
       />
+
+      {error && <p className={styles.error}>{error}</p>}
     </li>
   );
 }
