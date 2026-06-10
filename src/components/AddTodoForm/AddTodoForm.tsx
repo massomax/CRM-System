@@ -1,63 +1,75 @@
-import { useState, type JSX } from "react";
-import { AddIcon } from "@/ui/icons";
-import { validateTodoTitle } from "@/utils/validation";
+import { type JSX } from "react";
+import { Alert, Button, Form, Input, Space } from "antd";
+import { PlusCircleOutlined } from "@ant-design/icons";
 import { createTodo } from "@/api/todosApi";
-import styles from "./AddTodoForm.module.css";
-import { Input } from "@/ui/Input/Input";
-import { IconButton } from "@/ui/IconButton/IconButton";
+import { todoTitleRules } from "@/utils/todoValidationRules";
 
+type AddTodoFormValue = {
+  title: string;
+};
 interface AddTodoFormProps {
-  setLoading: (loading: boolean) => void;
+  isLoading: boolean;
+  error: string | null;
+  setIsLoading: (isLoading: boolean) => void;
+  setError: (error: string | null) => void;
   loadTodos: () => Promise<void>;
 }
-
 export function AddTodoForm({
-  setLoading,
+  isLoading,
+  error,
+  setIsLoading,
+  setError,
   loadTodos,
 }: AddTodoFormProps): JSX.Element {
-  const [newTitle, setNewTitle] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
+  const [form] = Form.useForm<AddTodoFormValue>();
 
-  const handleEditTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTitle(e.target.value);
-    setError(null);
-  };
-
-  const handleAddTodo = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleAddTodo = async (value: AddTodoFormValue): Promise<void> => {
     try {
-      e.preventDefault();
-      const validatedTitle = validateTodoTitle(newTitle.trim());
-      setLoading(true);
+      setIsLoading(true);
       setError(null);
-
-      await createTodo({ title: validatedTitle });
-
-      setNewTitle("");
+      await createTodo({ title: value.title.trim() });
+      form.resetFields();
       await loadTodos();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError("Неизвестная ошибка при добавлении задачи");
+        setError("Неизвестная ошибка");
       }
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
   return (
-    <form onSubmit={handleAddTodo} className={styles.form}>
-      <div className={styles.row}>
-        <Input
-          value={newTitle}
-          placeholder={"Введите текст задачи"}
-          // isDisabled={true}
-          handleEditTitleChange={handleEditTitleChange}
-        />
-        <IconButton type="submit" ariaLabel="Добавить задачу">
-          <AddIcon />
-        </IconButton>
-      </div>
-      {error && <p className={styles.error}>{error}</p>}
-    </form>
+    <>
+      <Form<AddTodoFormValue>
+        onFinish={handleAddTodo}
+        form={form}
+        layout="vertical"
+        style={{
+          width: "100%",
+          maxWidth: 640,
+        }}
+      >
+        <Space.Compact block>
+          <Form.Item
+            name="title"
+            style={{
+              width: "100%",
+            }}
+            rules={todoTitleRules}
+          >
+            <Input placeholder="Введите текст задачи" />
+          </Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            icon={<PlusCircleOutlined />}
+            disabled={isLoading}
+          />
+        </Space.Compact>
+      </Form>
+      {error && <Alert type="error" title={error} />}
+    </>
   );
 }

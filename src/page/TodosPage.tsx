@@ -1,73 +1,109 @@
-import { useEffect, useState, useCallback, type JSX } from "react";
 import { AddTodoForm } from "@components/AddTodoForm/AddTodoForm";
 
 import styles from "./TodosPage.module.css";
-import { getTodos } from "@/api/todosApi";
-
-import { type Todo, type TodoInfo, type FilterType } from "@/types/todos";
 
 import { TodoFilters } from "@/components/TodoFilters/TodoFilters";
 import { TodoList } from "@/components/TodoList/TodoList";
+import { useCallback, useEffect, useState, type JSX } from "react";
+import { Flex } from "antd";
+import { Content } from "antd/es/layout/layout";
+import type { FilterType, Todo, TodoInfo } from "@/types/todos";
+import { getTodos } from "@/api/todosApi";
+import { useSearchParams } from "react-router";
+
+const getValidTodoFilter = (filter: string | null): FilterType => {
+  if (filter === "all" || filter === "completed" || filter === "inWork") {
+    return filter;
+  }
+  return "all";
+};
 
 export function TodosPage(): JSX.Element {
-  const [amountTasks, setAmountTasks] = useState<TodoInfo | undefined>(
-    undefined,
-  );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [todoFilter, setTodoFilter] = useState<FilterType>("all");
+  const [amountTasks, setAmountTasks] = useState<TodoInfo | undefined>();
+  const [serachParams, setSearchParams] = useSearchParams();
 
-  const loadTodos = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const todoFilter = getValidTodoFilter(serachParams.get("filter"));
+
+  const loadTodos = useCallback(async (): Promise<void> => {
     try {
-      const data = await getTodos(todoFilter);
-      setTodos(data.data);
-      setAmountTasks(data.info);
+      setIsLoading(true);
+      setError(null);
+
+      const response = await getTodos(todoFilter);
+
+      setTodos(response.data);
+      setAmountTasks(response.info);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError("Неизвестная ошибка при загрузке задач");
+        setError("Неизвестная ошибка!");
       }
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, [todoFilter]);
 
-  const handleFilterChange = (filter: FilterType) => {
-    setTodoFilter(filter);
-  };
-
   useEffect(() => {
     loadTodos();
+    const interval = setInterval(() => {
+      loadTodos();
+    }, 5000);
+    return () => {
+      clearInterval(interval);
+    };
   }, [loadTodos]);
 
+  const handleFilterChange = (filter: FilterType) => {
+    setSearchParams({ filter });
+  };
+
   return (
-    <div className={styles.root}>
-      <div className={styles.container}>
+    <Content
+      style={{
+        padding: "32px 16px",
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <Flex
+        vertical
+        align="center"
+        gap={14}
+        style={{ width: "100%", maxWidth: 640 }}
+      >
         <h1 className={styles.title}>Todo</h1>
-        <AddTodoForm loadTodos={loadTodos} setLoading={setLoading} />
+        <AddTodoForm
+          setIsLoading={setIsLoading}
+          isLoading={isLoading}
+          error={error}
+          setError={setError}
+          loadTodos={loadTodos}
+        />
         <TodoFilters
-          onFilterChange={handleFilterChange}
-          todoFilter={todoFilter}
           amountTasks={amountTasks}
+          currentTargetFilter={todoFilter}
+          handleFilterChange={handleFilterChange}
         />
         {error ? (
-          <p className={styles.error}>{error}</p>
-        ) : loading ? (
+          <p>Ошибка: {error}</p>
+        ) : isLoading ? (
           <p>Загрузка задач...</p>
         ) : todos.length === 0 ? (
           <p>Задачи не найдены</p>
         ) : (
           <TodoList
             todos={todos}
-            setLoading={setLoading}
+            // isLoading={isLoading}
+            // setIsLoading={setIsLoading}
             loadTodos={loadTodos}
           />
         )}
-      </div>
-    </div>
+      </Flex>
+    </Content>
   );
 }

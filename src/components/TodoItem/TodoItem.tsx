@@ -1,146 +1,178 @@
 import { useState, type JSX } from "react";
-import { CancelIcon, DeleteIcon, EditIcon, SaveIcon } from "@/ui/icons";
 import styles from "./TodoItem.module.css";
 import type { Todo } from "@/types/todos";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Space,
+  type CheckboxChangeEvent,
+} from "antd";
+import {
+  CloseOutlined,
+  DeleteOutlined,
+  FileAddOutlined,
+  FormOutlined,
+} from "@ant-design/icons";
 import { deleteTodo, updateTodo } from "@/api/todosApi";
-import { validateTodoTitle } from "@/utils/validation";
-import { IconButton } from "@/ui/IconButton/IconButton";
+import { todoTitleRules } from "@/utils/todoValidationRules";
 
 interface TodoItemProps {
   todo: Todo;
-  setLoading: (loading: boolean) => void;
+  // isLoading: boolean;
+  // setIsLoading: (isLoading: boolean) => void;
   loadTodos: () => Promise<void>;
 }
 
 export function TodoItem({
   todo,
-  setLoading,
+  // isLoading,
+  // setIsLoading,
   loadTodos,
 }: TodoItemProps): JSX.Element {
-  const [editTitle, setEditTitle] = useState<string>("");
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [form] = Form.useForm<{ newTitle: string }>();
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleUpdateTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditTitle(e.target.value);
-    setError(null);
-  };
-
-  const handleDeleteTodo = async (id: Todo["id"]) => {
+  const handleDeleteTodo = async (): Promise<void> => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       setError(null);
-      await deleteTodo(id);
+      await deleteTodo(todo.id);
       await loadTodos();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError("Неизвестная ошибка при удалении задачи");
+        setError("Неизвестная ошибка");
       }
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const handleSaveTitle = async (id: Todo["id"], newTitle: string) => {
+  const handleSaveTitle = async (newTitle: string): Promise<void> => {
     try {
-      const validatedTitle = validateTodoTitle(newTitle.trim());
-      setLoading(true);
+      setIsLoading(true);
       setError(null);
-      await updateTodo(id, { title: validatedTitle });
+
+      await updateTodo(todo.id, { title: newTitle.trim() });
+
       await loadTodos();
-      setEditTitle("");
-      setIsEdit(false);
+
+      form.resetFields();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError("Неизвестная ошибка при обновлении задачи");
+        setError("Неизвестная ошибка");
       }
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
-
-  const handleToggleIsDone = async (id: Todo["id"], isDone: boolean) => {
+  const handleToggleIsDone = async (
+    event: CheckboxChangeEvent,
+  ): Promise<void> => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       setError(null);
-      await updateTodo(id, { isDone });
+      await updateTodo(todo.id, { isDone: event.target.checked });
       await loadTodos();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError("Неизвестная ошибка при обновлении статуса задачи");
+        setError("Неизвестная ошибка");
       }
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
+  };
+
+  const onFinish = async (values: { newTitle: string }): Promise<void> => {
+    await handleSaveTitle(values.newTitle);
   };
 
   const handleCancelEdit = () => {
-    setError(null);
     setIsEdit(false);
+    form.resetFields();
+    setError(null);
   };
 
   const handleStartEdit = () => {
-    setError(null);
+    form.setFieldsValue({ newTitle: todo.title });
     setIsEdit(true);
-    setEditTitle(todo.title);
+    setError(null);
   };
 
   return isEdit ? (
-    <div>
-      <li className={styles.item}>
-        <input
-          type="text"
-          className={styles.editInput}
-          value={editTitle}
-          placeholder={todo.title}
-          onChange={handleUpdateTitleChange}
-        />
-        <IconButton
-          variant="danger"
-          onClick={handleCancelEdit}
-          ariaLabel="Отменить изменения"
-        >
-          <CancelIcon />
-        </IconButton>
-        <IconButton
-          variant="ghost"
-          onClick={() => handleSaveTitle(todo.id, editTitle)}
-          ariaLabel="Сохранить изменения"
-        >
-          <SaveIcon />
-        </IconButton>
-      </li>
+    <li className={styles.item}>
+      <Form<{ newTitle: string }>
+        onFinish={onFinish}
+        form={form}
+        initialValues={{ newTitle: todo.title }}
+        style={{
+          width: "100%",
+          maxWidth: 640,
+          padding: 0,
+        }}
+        layout="vertical"
+      >
+        <Space.Compact block>
+          <Form.Item
+            name="newTitle"
+            rules={todoTitleRules}
+            style={{
+              width: "100%",
+            }}
+          >
+            <Input type="text" />
+          </Form.Item>
+
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            onClick={handleCancelEdit}
+            style={{
+              marginInline: 4,
+            }}
+            disabled={isLoading}
+            danger
+          />
+          <Button
+            htmlType="submit"
+            icon={<FileAddOutlined />}
+            disabled={isLoading}
+            style={{
+              marginInline: 4,
+            }}
+          />
+        </Space.Compact>
+      </Form>
       {error && <p className={styles.error}>{error}</p>}
-    </div>
+    </li>
   ) : (
     <li className={styles.item}>
-      <input
-        type="checkbox"
-        className={styles.checkbox}
-        checked={todo.isDone}
-        onChange={(e) => handleToggleIsDone(todo.id, e.target.checked)}
-      />
+      <Checkbox checked={todo.isDone} onChange={handleToggleIsDone} />
       <span className={styles.title}>{todo.title}</span>
-      <IconButton
-        onClick={() => handleDeleteTodo(todo.id)}
-        variant="danger"
-        ariaLabel="Удалить задачу"
-      >
-        <DeleteIcon />
-      </IconButton>
-      <IconButton
+      <Button
+        htmlType="button"
+        icon={<DeleteOutlined />}
+        onClick={handleDeleteTodo}
+        disabled={isLoading}
+        danger
+      />
+      <Button
+        htmlType="button"
+        icon={<FormOutlined />}
         onClick={handleStartEdit}
-        variant="ghost"
-        ariaLabel="Редактировать задачу"
-      >
-        <EditIcon />
-      </IconButton>
+        disabled={isLoading}
+      />
+
+      {error && <p className={styles.error}>{error}</p>}
     </li>
   );
 }
