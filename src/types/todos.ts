@@ -25,3 +25,4 @@ export interface MetaResponse<T, N> {
 }
 
 export type FilterType = "all" | "inWork" | "completed";
+export type AsyncStatus = "idle" | "pending" | "fulfilled" | "rejected";
