@@ -4,7 +4,7 @@ import { type JSX } from "react";
 import { Segmented } from "antd";
 
 interface TodoFiltersProps {
-  amountTasks?: TodoInfo;
+  amountTasks?: TodoInfo | null;
   currentTargetFilter: FilterType;
   handleFilterChange: (filter: FilterType) => void;
 }

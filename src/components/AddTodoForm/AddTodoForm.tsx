@@ -10,35 +10,16 @@ type AddTodoFormValue = {
 interface AddTodoFormProps {
   isLoading: boolean;
   error: string | null;
-  setIsLoading: (isLoading: boolean) => void;
-  setError: (error: string | null) => void;
-  loadTodos: () => Promise<void>;
 }
 export function AddTodoForm({
   isLoading,
   error,
-  setIsLoading,
-  setError,
-  loadTodos,
 }: AddTodoFormProps): JSX.Element {
   const [form] = Form.useForm<AddTodoFormValue>();
 
   const handleAddTodo = async (value: AddTodoFormValue): Promise<void> => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      await createTodo({ title: value.title.trim() });
-      form.resetFields();
-      await loadTodos();
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Неизвестная ошибка");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    await createTodo({ title: value.title.trim() });
+    form.resetFields();
   };
   return (
     <>

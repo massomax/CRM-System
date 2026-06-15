@@ -4,12 +4,19 @@ import styles from "./TodosPage.module.css";
 
 import { TodoFilters } from "@/components/TodoFilters/TodoFilters";
 import { TodoList } from "@/components/TodoList/TodoList";
-import { useCallback, useEffect, useState, type JSX } from "react";
 import { Flex } from "antd";
 import { Content } from "antd/es/layout/layout";
-import type { FilterType, Todo, TodoInfo } from "@/types/todos";
-import { getTodos } from "@/api/todosApi";
+import type { FilterType } from "@/types/todos";
 import { useSearchParams } from "react-router";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  selectTodos,
+  selectTodosError,
+  selectTodosInfo,
+  selectTodosStatus,
+} from "@/store/todos/selectors";
+import { useEffect, type JSX } from "react";
+import { loadTodos, setFilter } from "@/store/todos/todosSlice";
 
 const getValidTodoFilter = (filter: string | null): FilterType => {
   if (filter === "all" || filter === "completed" || filter === "inWork") {
@@ -19,47 +26,23 @@ const getValidTodoFilter = (filter: string | null): FilterType => {
 };
 
 export function TodosPage(): JSX.Element {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [amountTasks, setAmountTasks] = useState<TodoInfo | undefined>();
   const [serachParams, setSearchParams] = useSearchParams();
-
   const todoFilter = getValidTodoFilter(serachParams.get("filter"));
-
-  const loadTodos = useCallback(async (): Promise<void> => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const response = await getTodos(todoFilter);
-
-      setTodos(response.data);
-      setAmountTasks(response.info);
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Неизвестная ошибка!");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [todoFilter]);
-
-  useEffect(() => {
-    loadTodos();
-    const interval = setInterval(() => {
-      loadTodos();
-    }, 5000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [loadTodos]);
+  const todos = useAppSelector(selectTodos);
+  const amountTasks = useAppSelector(selectTodosInfo);
+  const status = useAppSelector(selectTodosStatus);
+  const error = useAppSelector(selectTodosError);
+  const isLoading = status === "pending";
+  const dispatch = useAppDispatch();
 
   const handleFilterChange = (filter: FilterType) => {
     setSearchParams({ filter });
   };
+
+  useEffect(() => {
+    dispatch(setFilter(todoFilter));
+    dispatch(loadTodos(todoFilter));
+  }, [dispatch, todoFilter]);
 
   return (
     <Content
@@ -77,13 +60,7 @@ export function TodosPage(): JSX.Element {
         style={{ width: "100%", maxWidth: 640 }}
       >
         <h1 className={styles.title}>Todo</h1>
-        <AddTodoForm
-          setIsLoading={setIsLoading}
-          isLoading={isLoading}
-          error={error}
-          setError={setError}
-          loadTodos={loadTodos}
-        />
+        <AddTodoForm isLoading={isLoading} error={error} />
         <TodoFilters
           amountTasks={amountTasks}
           currentTargetFilter={todoFilter}
@@ -96,12 +73,7 @@ export function TodosPage(): JSX.Element {
         ) : todos.length === 0 ? (
           <p>Задачи не найдены</p>
         ) : (
-          <TodoList
-            todos={todos}
-            // isLoading={isLoading}
-            // setIsLoading={setIsLoading}
-            loadTodos={loadTodos}
-          />
+          <TodoList todos={todos} />
         )}
       </Flex>
     </Content>

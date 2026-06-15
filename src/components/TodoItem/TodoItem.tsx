@@ -20,17 +20,9 @@ import { todoTitleRules } from "@/utils/todoValidationRules";
 
 interface TodoItemProps {
   todo: Todo;
-  // isLoading: boolean;
-  // setIsLoading: (isLoading: boolean) => void;
-  loadTodos: () => Promise<void>;
 }
 
-export function TodoItem({
-  todo,
-  // isLoading,
-  // setIsLoading,
-  loadTodos,
-}: TodoItemProps): JSX.Element {
+export function TodoItem({ todo }: TodoItemProps): JSX.Element {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [form] = Form.useForm<{ newTitle: string }>();
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +33,6 @@ export function TodoItem({
       setIsLoading(true);
       setError(null);
       await deleteTodo(todo.id);
-      await loadTodos();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -59,8 +50,6 @@ export function TodoItem({
       setError(null);
 
       await updateTodo(todo.id, { title: newTitle.trim() });
-
-      await loadTodos();
 
       form.resetFields();
     } catch (error) {
@@ -80,7 +69,6 @@ export function TodoItem({
       setIsLoading(true);
       setError(null);
       await updateTodo(todo.id, { isDone: event.target.checked });
-      await loadTodos();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
