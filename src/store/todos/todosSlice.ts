@@ -109,39 +109,6 @@ const todosSlice = createSlice({
       .addCase(loadTodosThunk.rejected, (state, action) => {
         state.status = "rejected";
         state.error = action.payload ?? "Не удалось загрузить задачи";
-      })
-      .addCase(createTodoThunk.pending, (state) => {
-        state.status = "pending";
-        state.error = null;
-      })
-      .addCase(createTodoThunk.fulfilled, (state) => {
-        state.status = "fulfilled";
-      })
-      .addCase(createTodoThunk.rejected, (state, action) => {
-        state.status = "rejected";
-        state.error = action.payload ?? "Не удалось создать задачу";
-      })
-      .addCase(updateTodoThunk.pending, (state) => {
-        state.status = "pending";
-        state.error = null;
-      })
-      .addCase(updateTodoThunk.fulfilled, (state) => {
-        state.status = "fulfilled";
-      })
-      .addCase(updateTodoThunk.rejected, (state, action) => {
-        state.status = "rejected";
-        state.error = action.payload ?? "Не удалось обновить задачу";
-      })
-      .addCase(deleteTodoThunk.pending, (state) => {
-        state.status = "pending";
-        state.error = null;
-      })
-      .addCase(deleteTodoThunk.fulfilled, (state) => {
-        state.status = "fulfilled";
-      })
-      .addCase(deleteTodoThunk.rejected, (state, action) => {
-        state.status = "rejected";
-        state.error = action.payload ?? "Не удалось удалить задачу";
       });
   },
 });

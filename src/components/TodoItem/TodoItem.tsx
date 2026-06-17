@@ -43,6 +43,10 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
       await dispatch(deleteTodoThunk(todo.id)).unwrap();
       await dispatch(loadTodosThunk(currentFilterTodos)).unwrap();
     } catch (error) {
+      if (typeof error === "string") {
+        setError(error);
+        return;
+      }
       if (error instanceof Error) {
         setError(error.message);
       } else {
@@ -64,12 +68,17 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
       form.resetFields();
       await dispatch(loadTodosThunk(currentFilterTodos)).unwrap();
     } catch (error) {
+      if (typeof error === "string") {
+        setError(error);
+        return;
+      }
       if (error instanceof Error) {
         setError(error.message);
       } else {
         setError("Неизвестная ошибка");
       }
     } finally {
+      setIsEdit(false);
       setIsLoading(false);
     }
   };
@@ -85,9 +94,12 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
           data: { isDone: event.target.checked },
         }),
       ).unwrap();
-      form.resetFields();
       await dispatch(loadTodosThunk(currentFilterTodos)).unwrap();
     } catch (error) {
+      if (typeof error === "string") {
+        setError(error);
+        return;
+      }
       if (error instanceof Error) {
         setError(error.message);
       } else {

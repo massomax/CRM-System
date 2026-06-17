@@ -1,13 +1,9 @@
-import { type JSX } from "react";
+import { useState, type JSX } from "react";
 import { Alert, Button, Form, Input, Space } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { todoTitleRules } from "@/utils/todoValidationRules";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  selectFilterTodos,
-  selectTodosError,
-  selectTodosStatus,
-} from "@/store/todos/selectors";
+import { selectFilterTodos } from "@/store/todos/selectors";
 import { createTodoThunk, loadTodosThunk } from "@/store/todos/todosSlice";
 
 type AddTodoFormValue = {
@@ -16,24 +12,31 @@ type AddTodoFormValue = {
 
 export function AddTodoForm(): JSX.Element {
   const [form] = Form.useForm<AddTodoFormValue>();
-  const error = useAppSelector(selectTodosError);
-  const status = useAppSelector(selectTodosStatus);
-  const isLoading = status === "pending";
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const filter = useAppSelector(selectFilterTodos);
 
   const dispatch = useAppDispatch();
 
   const handleAddTodo = async (value: AddTodoFormValue): Promise<void> => {
-    const title = value.title.trim();
-    if (!title) {
-      return;
-    }
     try {
+      setIsLoading(true);
+      setError(null);
       await dispatch(createTodoThunk({ title: value.title.trim() })).unwrap();
       form.resetFields();
       await dispatch(loadTodosThunk(filter)).unwrap();
-    } catch {
-      // Оштбка обработана в Redux
+    } catch (error) {
+      if (typeof error === "string") {
+        setError(error);
+        return;
+      }
+      if (error instanceof Error) {
+        setError(error.message);
+        return;
+      }
+      setError("Не известная ошибка");
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
