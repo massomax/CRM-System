@@ -15,8 +15,14 @@ import {
   FileAddOutlined,
   FormOutlined,
 } from "@ant-design/icons";
-import { deleteTodo, updateTodo } from "@/api/todosApi";
 import { todoTitleRules } from "@/utils/todoValidationRules";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  deleteTodoThunk,
+  loadTodosThunk,
+  updateTodoThunk,
+} from "@/store/todos/todosSlice";
+import { selectFilterTodos } from "@/store/todos/selectors";
 
 interface TodoItemProps {
   todo: Todo;
@@ -27,12 +33,15 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
   const [form] = Form.useForm<{ newTitle: string }>();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const currentFilterTodos = useAppSelector(selectFilterTodos);
 
   const handleDeleteTodo = async (): Promise<void> => {
     try {
       setIsLoading(true);
       setError(null);
-      await deleteTodo(todo.id);
+      await dispatch(deleteTodoThunk(todo.id)).unwrap();
+      await dispatch(loadTodosThunk(currentFilterTodos)).unwrap();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -49,9 +58,11 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
       setIsLoading(true);
       setError(null);
 
-      await updateTodo(todo.id, { title: newTitle.trim() });
-
+      await dispatch(
+        updateTodoThunk({ id: todo.id, data: { title: newTitle } }),
+      ).unwrap();
       form.resetFields();
+      await dispatch(loadTodosThunk(currentFilterTodos)).unwrap();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -68,7 +79,14 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
     try {
       setIsLoading(true);
       setError(null);
-      await updateTodo(todo.id, { isDone: event.target.checked });
+      await dispatch(
+        updateTodoThunk({
+          id: todo.id,
+          data: { isDone: event.target.checked },
+        }),
+      ).unwrap();
+      form.resetFields();
+      await dispatch(loadTodosThunk(currentFilterTodos)).unwrap();
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);

@@ -1,10 +1,11 @@
-import { getTodos } from "@/api/todosApi";
-import type {
-  AsyncStatus,
-  FilterType,
-  MetaResponse,
-  Todo,
-  TodoInfo,
+import { createTodo, deleteTodo, getTodos, updateTodo } from "@/api/todosApi";
+import {
+  type AsyncStatus,
+  type FilterType,
+  type MetaResponse,
+  type Todo,
+  type TodoInfo,
+  type TodoRequest,
 } from "@/types/todos";
 import {
   createAsyncThunk,
@@ -20,6 +21,15 @@ type TodosState = {
   error: string | null;
 };
 
+type CreateTodoTitle = {
+  title: string;
+};
+
+type UpdateTodoPayload = {
+  id: Todo["id"];
+  data: TodoRequest;
+};
+
 const initialState: TodosState = {
   items: [],
   filter: "all",
@@ -28,16 +38,52 @@ const initialState: TodosState = {
   error: null,
 };
 
-export const loadTodos = createAsyncThunk<
+export const loadTodosThunk = createAsyncThunk<
   MetaResponse<Todo, TodoInfo>,
   FilterType,
   { rejectValue: string }
->("todos/loadTodos", async (filter, { rejectWithValue }) => {
+>("todos/loadTodosThunk", async (filter, { rejectWithValue }) => {
   try {
     const todos = await getTodos(filter);
     return todos;
   } catch {
     return rejectWithValue("Не удалось загрузить задачи");
+  }
+});
+
+export const createTodoThunk = createAsyncThunk<
+  void,
+  CreateTodoTitle,
+  { rejectValue: string }
+>("todos/createTodoThunk", async ({ title }, { rejectWithValue }) => {
+  try {
+    await createTodo({ title });
+  } catch {
+    return rejectWithValue("Не удалось создать задачу");
+  }
+});
+
+export const updateTodoThunk = createAsyncThunk<
+  void,
+  UpdateTodoPayload,
+  { rejectValue: string }
+>("todos/updateTodoThunk", async ({ id, data }, { rejectWithValue }) => {
+  try {
+    await updateTodo(id, data);
+  } catch {
+    return rejectWithValue("Не удалось обновить задачу");
+  }
+});
+
+export const deleteTodoThunk = createAsyncThunk<
+  void,
+  Todo["id"],
+  { rejectValue: string }
+>("todos/deleteTodoThunk", async (id, { rejectWithValue }) => {
+  try {
+    await deleteTodo(id);
+  } catch {
+    return rejectWithValue("Не удалось удалить задачу");
   }
 });
 
@@ -51,18 +97,51 @@ const todosSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loadTodos.pending, (state) => {
+      .addCase(loadTodosThunk.pending, (state) => {
         state.status = "pending";
         state.error = null;
       })
-      .addCase(loadTodos.fulfilled, (state, action) => {
+      .addCase(loadTodosThunk.fulfilled, (state, action) => {
         state.status = "fulfilled";
         state.items = action.payload.data;
         state.info = action.payload.info ?? null;
       })
-      .addCase(loadTodos.rejected, (state, action) => {
+      .addCase(loadTodosThunk.rejected, (state, action) => {
         state.status = "rejected";
         state.error = action.payload ?? "Не удалось загрузить задачи";
+      })
+      .addCase(createTodoThunk.pending, (state) => {
+        state.status = "pending";
+        state.error = null;
+      })
+      .addCase(createTodoThunk.fulfilled, (state) => {
+        state.status = "fulfilled";
+      })
+      .addCase(createTodoThunk.rejected, (state, action) => {
+        state.status = "rejected";
+        state.error = action.payload ?? "Не удалось создать задачу";
+      })
+      .addCase(updateTodoThunk.pending, (state) => {
+        state.status = "pending";
+        state.error = null;
+      })
+      .addCase(updateTodoThunk.fulfilled, (state) => {
+        state.status = "fulfilled";
+      })
+      .addCase(updateTodoThunk.rejected, (state, action) => {
+        state.status = "rejected";
+        state.error = action.payload ?? "Не удалось обновить задачу";
+      })
+      .addCase(deleteTodoThunk.pending, (state) => {
+        state.status = "pending";
+        state.error = null;
+      })
+      .addCase(deleteTodoThunk.fulfilled, (state) => {
+        state.status = "fulfilled";
+      })
+      .addCase(deleteTodoThunk.rejected, (state, action) => {
+        state.status = "rejected";
+        state.error = action.payload ?? "Не удалось удалить задачу";
       });
   },
 });
