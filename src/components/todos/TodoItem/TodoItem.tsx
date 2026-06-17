@@ -63,7 +63,7 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
       setError(null);
 
       await dispatch(
-        updateTodoThunk({ id: todo.id, data: { title: newTitle } }),
+        updateTodoThunk({ id: todo.id, data: { title: newTitle.trim() } }),
       ).unwrap();
       form.resetFields();
       setIsEdit(false);

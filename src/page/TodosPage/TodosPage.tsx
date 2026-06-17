@@ -1,9 +1,9 @@
-import { AddTodoForm } from "@components/AddTodoForm/AddTodoForm";
+import { AddTodoForm } from "@/components/todos/AddTodoForm/AddTodoForm";
 
 import styles from "./TodosPage.module.css";
 
-import { TodoFilters } from "@/components/TodoFilters/TodoFilters";
-import { TodoList } from "@/components/TodoList/TodoList";
+import { TodoFilters } from "@/components/todos/TodoFilters/TodoFilters";
+import { TodoList } from "@/components/todos/TodoList/TodoList";
 import { Flex } from "antd";
 import { Content } from "antd/es/layout/layout";
 import type { FilterType } from "@/types/todos";

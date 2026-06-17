@@ -2,9 +2,9 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router";
-import { MainLayout } from "./components/MainLayout/MainLayout";
-import { TodosPage } from "./page/TodosPage";
-import { UserProfile } from "./components/UserProfile/UserProfile";
+import { MainLayout } from "./lyaouts/MainLayout/MainLayout";
+import { TodosPage } from "./page/TodosPage/TodosPage";
+import { UserProfile } from "./page/UserProfilePage/UserProfilePage";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
 
