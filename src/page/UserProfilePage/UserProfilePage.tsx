@@ -1,6 +1,6 @@
 import { Flex } from "antd";
 import { Content } from "antd/es/layout/layout";
-import styles from "./UserProfile.module.css";
+import styles from "./UserProfilePage.module.css";
 
 export function UserProfile() {
   return (
