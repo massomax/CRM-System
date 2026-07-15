@@ -2,7 +2,7 @@ import type { JSX } from "react";
 import { TodoItem } from "../TodoItem/TodoItem";
 import styles from "./TodoList.module.css";
 import { useAppSelector } from "@/store/hooks";
-import { selectTodos } from "@/store/todos/selectors";
+import { selectTodos } from "@/store/todos/todosSelectors";
 
 export function TodoList(): JSX.Element {
   const todos = useAppSelector(selectTodos);

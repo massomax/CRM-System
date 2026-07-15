@@ -13,7 +13,7 @@ import {
   selectTodos,
   selectTodosError,
   selectTodosStatus,
-} from "@/store/todos/selectors";
+} from "@/store/todos/todosSelectors";
 import { useEffect, type JSX } from "react";
 import { loadTodosThunk, setFilter } from "@/store/todos/todosSlice";
 

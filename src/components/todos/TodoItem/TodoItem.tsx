@@ -22,7 +22,7 @@ import {
   loadTodosThunk,
   updateTodoThunk,
 } from "@/store/todos/todosSlice";
-import { selectFilterTodos } from "@/store/todos/selectors";
+import { selectFilterTodos } from "@/store/todos/todosSelectors";
 
 interface TodoItemProps {
   todo: Todo;

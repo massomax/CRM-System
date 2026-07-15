@@ -3,7 +3,10 @@ import { type JSX } from "react";
 
 import { Segmented } from "antd";
 import { useAppSelector } from "@/store/hooks";
-import { selectFilterTodos, selectTodosInfo } from "@/store/todos/selectors";
+import {
+  selectFilterTodos,
+  selectTodosInfo,
+} from "@/store/todos/todosSelectors";
 
 interface TodoFiltersProps {
   handleFilterChange: (filter: FilterType) => void;

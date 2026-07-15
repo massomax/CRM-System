@@ -3,7 +3,7 @@ import { Alert, Button, Form, Input, Space } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { todoTitleRules } from "@/utils/todoValidationRules";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { selectFilterTodos } from "@/store/todos/selectors";
+import { selectFilterTodos } from "@/store/todos/todosSelectors";
 import { createTodoThunk, loadTodosThunk } from "@/store/todos/todosSlice";
 
 type AddTodoFormValue = {

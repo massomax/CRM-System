@@ -1,4 +1,3 @@
-import axios from "axios";
 import type {
   FilterType,
   MetaResponse,
@@ -6,10 +5,7 @@ import type {
   TodoInfo,
   TodoRequest,
 } from "@/types/todos";
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-});
+import { api } from "./apiClient";
 
 export const getTodos = async (
   filter?: FilterType,
