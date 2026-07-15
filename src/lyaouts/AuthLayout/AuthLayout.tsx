@@ -4,7 +4,7 @@ import { Outlet } from "react-router";
 import logo from "@/assets/logo.svg";
 import skeleton from "@/assets/skeleton.svg";
 import backgroundPlanet from "@/assets/backgroundPlannet.png";
-import commentLeft from "@/assets/commentleft.svg";
+import commentLeft from "@/assets/commentLeft.svg";
 import commentRight from "@/assets/commentRight.svg";
 import decor from "@/assets/decor.svg";
 import largePlanet from "@/assets/largePlannet.png";
