@@ -6,13 +6,9 @@ import { saveTokens } from "@/utils/tokenStorage";
 import { loginRules, passwordRules } from "@/utils/userValidationRules";
 import { Alert, Button, Checkbox, Form, Input, Typography } from "antd";
 import { useState, type JSX } from "react";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const { Title, Text } = Typography;
-
-type SignInLocationState = {
-  registrationSuccess?: boolean;
-};
 
 type SignInFormValues = {
   login: string;
@@ -21,14 +17,8 @@ type SignInFormValues = {
 };
 
 export function SignInPage(): JSX.Element {
-  const location = useLocation();
-
-  const locationState = location.state as SignInLocationState | null;
-  const isRegistrationSuccess = Boolean(locationState?.registrationSuccess);
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -63,14 +53,6 @@ export function SignInPage(): JSX.Element {
 
   return (
     <>
-      {isRegistrationSuccess && (
-        <Alert
-          type="success"
-          title="Аккаунт успешно зарегистрирован. Теперь войдите в систему."
-          showIcon
-        />
-      )}
-
       <div>
         <Title level={1}>Войти в аккаунт</Title>
         <Text type="secondary">
