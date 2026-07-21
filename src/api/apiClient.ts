@@ -1,4 +1,6 @@
 import { getTokens } from "@/services/authService";
+import { authLoggedOut } from "@/store/auth/authSlice";
+import { store } from "@/store/store";
 import { getAccessToken } from "@/utils/tokenStorage";
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
@@ -36,6 +38,8 @@ api.interceptors.response.use(
     const isRefreshSuccess = await getTokens();
 
     if (!isRefreshSuccess) {
+      store.dispatch(authLoggedOut()); // "Тут я хочу state.isAuthorizaed = false;"
+
       return Promise.reject(error);
     }
 

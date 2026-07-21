@@ -4,11 +4,9 @@ import type { JSX } from "react";
 import { Navigate, Outlet } from "react-router";
 
 export function EntryRoute(): JSX.Element {
-  const status = useAppSelector(selectAuthStatus);
-  if (status === "initializtion") {
-    return <div>Загрузка...</div>;
-  }
-  if (status === "authenticated") {
+  const isAuthorizaed = useAppSelector(selectAuthStatus);
+
+  if (isAuthorizaed) {
     return <Navigate to="/todos" replace />;
   }
   return <Outlet />;
