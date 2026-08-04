@@ -38,7 +38,7 @@ api.interceptors.response.use(
     const isRefreshSuccess = await getTokens();
 
     if (!isRefreshSuccess) {
-      store.dispatch(authLoggedOut()); // "Тут я хочу state.isAuthorizaed = false;"
+      store.dispatch(authLoggedOut());
 
       return Promise.reject(error);
     }
