@@ -1,40 +1,41 @@
-import { useState, type JSX } from "react";
+import { type JSX } from "react";
 import { Alert, Button, Form, Input, Space } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
+import { createTodo } from "@/api/todosApi";
 import { todoTitleRules } from "@/utils/todoValidationRules";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { selectFilterTodos } from "@/store/todos/todosSelectors";
-import { createTodoThunk, loadTodosThunk } from "@/store/todos/todosSlice";
 
 type AddTodoFormValue = {
   title: string;
 };
-
-export function AddTodoForm(): JSX.Element {
+interface AddTodoFormProps {
+  isLoading: boolean;
+  error: string | null;
+  setIsLoading: (isLoading: boolean) => void;
+  setError: (error: string | null) => void;
+  loadTodos: () => Promise<void>;
+}
+export function AddTodoForm({
+  isLoading,
+  error,
+  setIsLoading,
+  setError,
+  loadTodos,
+}: AddTodoFormProps): JSX.Element {
   const [form] = Form.useForm<AddTodoFormValue>();
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const filter = useAppSelector(selectFilterTodos);
-
-  const dispatch = useAppDispatch();
 
   const handleAddTodo = async (value: AddTodoFormValue): Promise<void> => {
     try {
       setIsLoading(true);
       setError(null);
-      await dispatch(createTodoThunk({ title: value.title.trim() })).unwrap();
+      await createTodo({ title: value.title.trim() });
       form.resetFields();
-      await dispatch(loadTodosThunk(filter)).unwrap();
+      await loadTodos();
     } catch (error) {
-      if (typeof error === "string") {
-        setError(error);
-        return;
-      }
       if (error instanceof Error) {
         setError(error.message);
-        return;
+      } else {
+        setError("Неизвестная ошибка");
       }
-      setError("Не известная ошибка");
     } finally {
       setIsLoading(false);
     }

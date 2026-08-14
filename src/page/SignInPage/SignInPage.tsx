@@ -2,7 +2,7 @@ import { signIn } from "@/api/authApi";
 import { authLoggedIn } from "@/store/auth/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import type { AuthData } from "@/types/auth";
-import { saveTokens } from "@/utils/tokenStorage";
+import { tokenManager } from "@/services/tokenManager";
 import { loginRules, passwordRules } from "@/utils/userValidationRules";
 import { Alert, Button, Checkbox, Form, Input, Typography } from "antd";
 import { useState, type JSX } from "react";
@@ -33,7 +33,7 @@ export function SignInPage(): JSX.Element {
 
       const tokens = await signIn(payload);
 
-      saveTokens(tokens, values.isRememberMe);
+      tokenManager.saveTokens(tokens, values.isRememberMe);
 
       dispatch(authLoggedIn());
 

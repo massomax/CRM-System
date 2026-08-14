@@ -1,7 +1,6 @@
-import { getTokens } from "@/services/authService";
 import { authLoggedOut } from "@/store/auth/authSlice";
 import { store } from "@/store/store";
-import { getAccessToken } from "@/utils/tokenStorage";
+import { tokenManager } from "@/services/tokenManager";
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & {
@@ -13,7 +12,7 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const accessToken = getAccessToken();
+  const accessToken = tokenManager.getAccessToken();
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
@@ -35,7 +34,7 @@ api.interceptors.response.use(
 
     originalRequest._retry = true;
 
-    const isRefreshSuccess = await getTokens();
+    const isRefreshSuccess = await tokenManager.refreshTokens();
 
     if (!isRefreshSuccess) {
       store.dispatch(authLoggedOut());

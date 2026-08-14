@@ -15,38 +15,34 @@ import {
   FileAddOutlined,
   FormOutlined,
 } from "@ant-design/icons";
+import { deleteTodo, updateTodo } from "@/api/todosApi";
 import { todoTitleRules } from "@/utils/todoValidationRules";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  deleteTodoThunk,
-  loadTodosThunk,
-  updateTodoThunk,
-} from "@/store/todos/todosSlice";
-import { selectFilterTodos } from "@/store/todos/todosSelectors";
 
 interface TodoItemProps {
   todo: Todo;
+  // isLoading: boolean;
+  // setIsLoading: (isLoading: boolean) => void;
+  loadTodos: () => Promise<void>;
 }
 
-export function TodoItem({ todo }: TodoItemProps): JSX.Element {
+export function TodoItem({
+  todo,
+  // isLoading,
+  // setIsLoading,
+  loadTodos,
+}: TodoItemProps): JSX.Element {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [form] = Form.useForm<{ newTitle: string }>();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const dispatch = useAppDispatch();
-  const currentFilterTodos = useAppSelector(selectFilterTodos);
 
   const handleDeleteTodo = async (): Promise<void> => {
     try {
       setIsLoading(true);
       setError(null);
-      await dispatch(deleteTodoThunk(todo.id)).unwrap();
-      dispatch(loadTodosThunk(currentFilterTodos));
+      await deleteTodo(todo.id);
+      await loadTodos();
     } catch (error) {
-      if (typeof error === "string") {
-        setError(error);
-        return;
-      }
       if (error instanceof Error) {
         setError(error.message);
       } else {
@@ -62,18 +58,12 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
       setIsLoading(true);
       setError(null);
 
-      await dispatch(
-        updateTodoThunk({ id: todo.id, data: { title: newTitle.trim() } }),
-      ).unwrap();
-      form.resetFields();
-      setIsEdit(false);
+      await updateTodo(todo.id, { title: newTitle.trim() });
 
-      dispatch(loadTodosThunk(currentFilterTodos));
+      await loadTodos();
+
+      form.resetFields();
     } catch (error) {
-      if (typeof error === "string") {
-        setError(error);
-        return;
-      }
       if (error instanceof Error) {
         setError(error.message);
       } else {
@@ -89,18 +79,9 @@ export function TodoItem({ todo }: TodoItemProps): JSX.Element {
     try {
       setIsLoading(true);
       setError(null);
-      await dispatch(
-        updateTodoThunk({
-          id: todo.id,
-          data: { isDone: event.target.checked },
-        }),
-      ).unwrap();
-      dispatch(loadTodosThunk(currentFilterTodos));
+      await updateTodo(todo.id, { isDone: event.target.checked });
+      await loadTodos();
     } catch (error) {
-      if (typeof error === "string") {
-        setError(error);
-        return;
-      }
       if (error instanceof Error) {
         setError(error.message);
       } else {

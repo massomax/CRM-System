@@ -11,7 +11,7 @@ import { Button, Layout, Menu } from "antd";
 import type { MenuItemType } from "antd/es/menu/interface";
 import type { Todo } from "@/types/todos";
 import { logoutUser } from "@/api/userApi";
-import { clearTokens } from "@/utils/tokenStorage";
+import { tokenManager } from "@/services/tokenManager";
 import { useAppDispatch } from "@/store/hooks";
 import { authLoggedOut } from "@/store/auth/authSlice";
 const { Content, Sider } = Layout;
@@ -25,8 +25,8 @@ const items: ItemType[] = [
     icon: <ContainerOutlined />,
   },
   {
-    label: <Link to="/todos/profile">Профиль</Link>,
-    key: "/todos/profile",
+    label: <Link to="/profile">Профиль</Link>,
+    key: "/profile",
     icon: <UserOutlined />,
   },
 ];
@@ -41,10 +41,10 @@ export function MainLayout(): JSX.Element {
   const handleLogoutUser = async (): Promise<void> => {
     try {
       await logoutUser();
-    } catch (error) {
-      console.log("Не удлось выйти из профиля", error);
+    } catch {
+      // Локальный выход должен завершиться, даже если сервер уже недоступен.
     } finally {
-      clearTokens();
+      tokenManager.clearTokens();
       dispatch(authLoggedOut());
       navigate("/signin", { replace: true });
     }

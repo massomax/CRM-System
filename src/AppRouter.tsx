@@ -3,7 +3,7 @@ import { AuthLayout } from "./lyaouts/AuthLayout/AuthLayout";
 import { SignUpPage } from "./page/SignUpPage/SignUpPage";
 import { SignInPage } from "./page/SignInPage/SignInPage";
 import { MainLayout } from "./lyaouts/MainLayout/MainLayout";
-import { TodosPage } from "./page/TodosPage/TodosPage";
+import { TodosPage } from "./page/TodosPage";
 import { UserProfilePage } from "./page/UserProfilePage/UserProfilePage";
 import type { JSX } from "react";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
@@ -20,9 +20,9 @@ export function AppRouter(): JSX.Element {
         </Route>
       </Route>
       <Route element={<ProtectedRoute />}>
-        <Route path="/todos" element={<MainLayout />}>
-          <Route index element={<TodosPage />} />
-          <Route path="profile" element={<UserProfilePage />} />
+        <Route element={<MainLayout />}>
+          <Route path="/todos" element={<TodosPage />} />
+          <Route path="/profile" element={<UserProfilePage />} />
         </Route>
       </Route>
     </Routes>

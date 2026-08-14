@@ -1,10 +1,13 @@
 .layout {
+  --auth-background-color: #ffffff;
+  --auth-planet-gradient: linear-gradient(135deg, #ffd9a8 0%, #860752 100%);
+
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1239fr) minmax(0, 811fr);
   min-height: 100vh;
   overflow: hidden;
-  background: #ffffff;
+  background: var(--auth-background-color);
 }
 
 .preview {
@@ -44,7 +47,7 @@
   width: clamp(120px, 13vw, 167px);
   aspect-ratio: 1 / 1;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ffd9a8 0%, #860752 100%);
+  background: var(--auth-planet-gradient);
   opacity: 0.4;
 }
 
@@ -102,7 +105,7 @@
   z-index: 1;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ffd9a8 0%, #860752 100%);
+  background: var(--auth-planet-gradient);
 }
 
 .planetTop {
@@ -147,7 +150,7 @@
   align-items: center;
   justify-content: center;
   padding: 48px;
-  background: #ffffff;
+  background: var(--auth-background-color);
 }
 
 .logo {

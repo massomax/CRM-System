@@ -1,4 +1,4 @@
-import { getTokens } from "@/services/authService";
+import { tokenManager } from "@/services/tokenManager";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 type AuthState = {
@@ -12,7 +12,7 @@ const initialState: AuthState = {
 export const initializeAuthThunk = createAsyncThunk<boolean>(
   "auth/initialize",
   async () => {
-    return getTokens();
+    return tokenManager.refreshTokens();
   },
 );
 
