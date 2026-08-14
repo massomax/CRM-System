@@ -20,17 +20,10 @@ import { todoTitleRules } from "@/utils/todoValidationRules";
 
 interface TodoItemProps {
   todo: Todo;
-  // isLoading: boolean;
-  // setIsLoading: (isLoading: boolean) => void;
   loadTodos: () => Promise<void>;
 }
 
-export function TodoItem({
-  todo,
-  // isLoading,
-  // setIsLoading,
-  loadTodos,
-}: TodoItemProps): JSX.Element {
+export function TodoItem({ todo, loadTodos }: TodoItemProps): JSX.Element {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [form] = Form.useForm<{ newTitle: string }>();
   const [error, setError] = useState<string | null>(null);

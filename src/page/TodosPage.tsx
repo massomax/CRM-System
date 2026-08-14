@@ -96,12 +96,7 @@ export function TodosPage(): JSX.Element {
         ) : todos.length === 0 ? (
           <p>Задачи не найдены</p>
         ) : (
-          <TodoList
-            todos={todos}
-            // isLoading={isLoading}
-            // setIsLoading={setIsLoading}
-            loadTodos={loadTodos}
-          />
+          <TodoList todos={todos} loadTodos={loadTodos} />
         )}
       </Flex>
     </Content>
