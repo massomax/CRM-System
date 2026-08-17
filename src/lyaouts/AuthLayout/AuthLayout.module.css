@@ -1,0 +1,161 @@
+.layout {
+  --auth-background-color: #ffffff;
+  --auth-planet-gradient: linear-gradient(135deg, #ffd9a8 0%, #860752 100%);
+
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1239fr) minmax(0, 811fr);
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--auth-background-color);
+}
+
+.preview {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: #fde4c8;
+}
+
+.decor {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.largePlanet {
+  position: absolute;
+  top: -88px;
+  left: -88px;
+  z-index: 1;
+  width: 280px;
+  height: auto;
+}
+
+.bottomPlanet {
+  position: absolute;
+  left: 55%;
+  bottom: -100px;
+  z-index: 5;
+  width: clamp(120px, 13vw, 167px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: var(--auth-planet-gradient);
+  opacity: 0.4;
+}
+
+.previewInner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 700px;
+  text-align: center;
+  transform: translateY(100px);
+}
+
+.illustrationScene {
+  position: relative;
+  width: min(100%, 595px);
+  aspect-ratio: 595 / 460;
+  margin: 0 auto;
+}
+
+.skeleton {
+  position: absolute;
+  left: 50%;
+  z-index: 1;
+  bottom: 0;
+  width: 500px;
+  height: auto;
+  transform: translateX(-50%);
+}
+
+.backgroundPlanet {
+  position: absolute;
+  z-index: 0;
+  width: 593px;
+  top: -45%;
+}
+
+.comment {
+  position: absolute;
+  z-index: 2;
+  width: 30%;
+  height: auto;
+}
+
+.commentLeft {
+  left: -4%;
+}
+
+.commentRight {
+  top: 2%;
+  right: -4%;
+}
+
+.planet {
+  position: absolute;
+  z-index: 1;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: var(--auth-planet-gradient);
+}
+
+.planetTop {
+  top: -35%;
+  right: 22%;
+  width: 65px;
+}
+
+.planetBottom {
+  right: -2%;
+  bottom: 50%;
+  width: 37px;
+}
+
+.previewText {
+  margin-top: 32px;
+  color: #73114b;
+}
+
+.previewText h1 {
+  margin: 0 0 12px;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.previewText p {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.formContainer {
+  width: 100%;
+  max-width: 420px;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  z-index: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: var(--auth-background-color);
+}
+
+.logo {
+  display: block;
+  width: 72px;
+  height: 72px;
+  margin: 0 0 24px;
+}

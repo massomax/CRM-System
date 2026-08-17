@@ -1,0 +1,12 @@
+.siderFooter {
+  margin-top: auto;
+  padding: 12px;
+}
+
+.siderContent {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding-bottom: 48px;
+}
