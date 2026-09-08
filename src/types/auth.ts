@@ -1,9 +1,10 @@
 export interface UserRegistration {
   login: string;
-  username: string;
+  userName: string;
   password: string;
   email: string;
   phoneNumber?: string;
+  brithday?: Date;
 }
 
 export interface AuthData {
@@ -25,6 +26,31 @@ export interface Profile {
   phoneNumber: string;
 }
 
+export interface User {
+  id: number;
+  userName: string;
+  email: string;
+  phoneNumber: string;
+  birthday: string | null;
+  roles: Role[];
+  isBlocked: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserUpdateRequest {
+  userName: string;
+  email: string;
+  phoneNumber: string;
+  birthday: string | null;
+}
+
+export interface UserListResponse {
+  data: User[];
+  total: number;
+  meta: Record<string, unknown>;
+}
+
 export interface ProfileRequest {
   username: string;
   email: string;
@@ -36,8 +62,8 @@ export interface PasswordRequest {
 }
 
 export interface Token {
-  accessToken: string;
-  refreshToken: string;
+  AccessToken: string;
+  RefreshToken: string;
 }
 
-export type Role = "ADMIN" | "USER" | "MODERATOR";
+export type Role = "user" | "manager" | "moderator" | "admin";

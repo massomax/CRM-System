@@ -6,7 +6,7 @@ const REFRESH_TOKEN_STORAGE_KEY = "refreshToken";
 export class TokenManager {
   private static instance: TokenManager | null = null;
 
-  private accessToken: Token["accessToken"] | null = null;
+  private accessToken: Token["AccessToken"] | null = null;
   private refreshPromise: Promise<boolean> | null = null;
 
   private constructor() {}
@@ -19,13 +19,13 @@ export class TokenManager {
     return TokenManager.instance;
   }
 
-  getAccessToken(): Token["accessToken"] | null {
+  getAccessToken(): Token["AccessToken"] | null {
     return this.accessToken;
   }
 
   saveTokens(tokens: Token, isRememberMe: boolean): void {
-    this.accessToken = tokens.accessToken;
-    this.saveRefreshToken(tokens.refreshToken, isRememberMe);
+    this.accessToken = tokens.AccessToken;
+    this.saveRefreshToken(tokens.RefreshToken, isRememberMe);
   }
 
   clearTokens(): void {
@@ -54,8 +54,8 @@ export class TokenManager {
 
       const tokens = await refreshAccessToken(refreshToken);
 
-      this.accessToken = tokens.accessToken;
-      this.replaceRefreshToken(tokens.refreshToken);
+      this.accessToken = tokens.AccessToken;
+      this.replaceRefreshToken(tokens.RefreshToken);
 
       return true;
     } catch {
@@ -65,7 +65,7 @@ export class TokenManager {
   }
 
   private saveRefreshToken(
-    refreshToken: Token["refreshToken"],
+    refreshToken: Token["RefreshToken"],
     isRememberMe: boolean,
   ): void {
     localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
@@ -75,14 +75,14 @@ export class TokenManager {
     storage.setItem(REFRESH_TOKEN_STORAGE_KEY, refreshToken);
   }
 
-  private getRefreshToken(): Token["refreshToken"] | null {
+  private getRefreshToken(): Token["RefreshToken"] | null {
     return (
       localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY) ??
       sessionStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)
     );
   }
 
-  private replaceRefreshToken(refreshToken: Token["refreshToken"]): void {
+  private replaceRefreshToken(refreshToken: Token["RefreshToken"]): void {
     if (localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY)) {
       localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, refreshToken);
       return;

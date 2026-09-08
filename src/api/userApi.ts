@@ -1,8 +1,8 @@
-import type { Profile } from "@/types/auth";
+import type { User } from "@/types/auth";
 import { api } from "./apiClient";
 
-export const getProfile = async (): Promise<Profile> => {
-  const response = await api.get<Profile>("/user/profile");
+export const getProfile = async (): Promise<User> => {
+  const response = await api.get<User>("/users/profile");
   return response.data;
 };
 
