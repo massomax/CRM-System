@@ -12,7 +12,7 @@ import type {
   User,
   UserListResponse,
   UserUpdateRequest,
-} from "@/types/auth";
+} from "@/types/users";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getUserListThunk = createAsyncThunk<

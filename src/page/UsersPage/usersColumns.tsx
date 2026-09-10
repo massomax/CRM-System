@@ -1,5 +1,5 @@
 import { UserActions } from "@/components/users/UserActions/UserActions";
-import type { Role, SortDirection, User, UserSortField } from "@/types/auth";
+import type { Role, SortDirection, User, UserSortField } from "@/types/users";
 import { Button, Flex, Tag, type TableProps } from "antd";
 import type { NavigateFunction } from "react-router";
 

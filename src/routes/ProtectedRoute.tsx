@@ -4,7 +4,7 @@ import {
   selectCurrentUserStatus,
 } from "@/store/auth/authSelectors";
 import { useAppSelector } from "@/store/hooks";
-import type { Role } from "@/types/auth";
+import type { Role } from "@/types/users";
 import type { JSX } from "react";
 import { Navigate, Outlet } from "react-router";
 
@@ -32,7 +32,7 @@ export function ProtectedRoute({
       return <Navigate to="/todos" replace />;
     }
 
-    const hasAllowedRole = currentUser.roles.some((role) =>
+    const hasAllowedRole = currentUser.roles.some((role: Role) =>
       allowedRoles.includes(role),
     );
 

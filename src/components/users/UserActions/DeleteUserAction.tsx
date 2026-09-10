@@ -1,7 +1,7 @@
 import { ConfirmModal } from "@/components/ConfirmModal/ConfirmModal";
 import { useAppDispatch } from "@/store/hooks";
 import { deleteUserThunk } from "@/store/users/usersThunks";
-import type { User } from "@/types/auth";
+import type { User } from "@/types/users";
 import { useState, type JSX } from "react";
 
 interface DeleteUserActionProps {

@@ -4,7 +4,7 @@ import {
   updateUserRolesThunk,
   updateUserThunk,
 } from "@/store/users/usersThunks";
-import type { User } from "@/types/auth";
+import type { User } from "@/types/users";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export type CurrentUserStatusType =

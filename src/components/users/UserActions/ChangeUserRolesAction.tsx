@@ -1,7 +1,7 @@
 import { ConfirmModal } from "@/components/ConfirmModal/ConfirmModal";
 import { useAppDispatch } from "@/store/hooks";
 import { updateUserRolesThunk } from "@/store/users/usersThunks";
-import type { Role, User } from "@/types/auth";
+import type { Role, User } from "@/types/users";
 import { Flex, Select, Typography } from "antd";
 import { useState, type JSX } from "react";
 

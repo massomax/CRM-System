@@ -1,4 +1,4 @@
-import type { User } from "@/types/auth";
+import type { User } from "@/types/users";
 import { createSlice } from "@reduxjs/toolkit";
 import {
   addBlockUserCases,

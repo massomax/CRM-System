@@ -1,5 +1,5 @@
 import { getProfile } from "@/api/userApi";
-import type { User } from "@/types/auth";
+import type { User } from "@/types/users";
 import {
   Alert,
   Card,

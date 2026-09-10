@@ -1,5 +1,5 @@
 import type { RootState } from "@/store/store";
-import type { User } from "@/types/auth";
+import type { User } from "@/types/users";
 import type { CurrentUserStatusType } from "./authSlice";
 
 export const selectAuthStatus = (state: RootState): boolean =>

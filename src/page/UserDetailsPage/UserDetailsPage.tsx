@@ -1,3 +1,4 @@
+import { InputPhone } from "@/components/auth/InputPhone/InputPhone";
 import { UserActions } from "@/components/users/UserActions/UserActions";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -8,7 +9,12 @@ import {
   selectUpdateUserStatus,
 } from "@/store/users/usersSelectors";
 import { getUserByIdThunk, updateUserThunk } from "@/store/users/usersThunks";
-import type { UserUpdateRequest } from "@/types/auth";
+import type { UserUpdateRequest } from "@/types/users";
+import {
+  emailRules,
+  phoneRules,
+  usernameRules,
+} from "@/utils/userValidationRules";
 import { LeftOutlined, UserOutlined } from "@ant-design/icons";
 import {
   Alert,
@@ -175,16 +181,20 @@ export function UserDetailsPage(): JSX.Element {
               />
             )}
 
-            <Form.Item label="Имя" name="userName">
+            <Form.Item label="Имя" name="userName" rules={usernameRules}>
               <Input />
             </Form.Item>
 
-            <Form.Item label="Email" name="email">
-              <Input />
+            <Form.Item label="Email" name="email" rules={emailRules}>
+              <Input type="email" />
             </Form.Item>
 
-            <Form.Item label="Номер телефона" name="phoneNumber">
-              <Input />
+            <Form.Item
+              label="Номер телефона"
+              name="phoneNumber"
+              rules={phoneRules}
+            >
+              <InputPhone />
             </Form.Item>
 
             <Flex gap={8}>

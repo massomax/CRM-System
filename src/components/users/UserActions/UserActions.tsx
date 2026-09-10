@@ -1,6 +1,6 @@
 import { selectCurrentUser } from "@/store/auth/authSelectors";
 import { useAppSelector } from "@/store/hooks";
-import type { User } from "@/types/auth";
+import type { User } from "@/types/users";
 import { MoreOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Flex, type MenuProps } from "antd";
 import { useState, type JSX } from "react";

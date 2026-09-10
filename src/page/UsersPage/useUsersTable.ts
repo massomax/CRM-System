@@ -11,10 +11,10 @@ import type {
   Role,
   SortDirection,
   UserSortField,
-} from "@/types/auth";
+} from "@/types/users";
 import type { TableProps } from "antd";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { User } from "@/types/auth";
+import type { User } from "@/types/users";
 
 const isRole = (value: unknown): value is Role => {
   return (

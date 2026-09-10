@@ -4,7 +4,7 @@ import type {
   User,
   UserListResponse,
   UserUpdateRequest,
-} from "@/types/auth";
+} from "@/types/users";
 import { api } from "./apiClient";
 
 export interface RolesRequest {
