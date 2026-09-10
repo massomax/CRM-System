@@ -1,3 +1,4 @@
+import { UserActions } from "@/components/users/UserActions/UserActions";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   selectUsers,
@@ -76,9 +77,13 @@ const getColumns = (
       title: "Действия",
       key: "actions",
       render: (_: unknown, user: User) => (
-        <Button onClick={() => navigate(`/users/${user.id}`)}>
-          Перейти к профилю
-        </Button>
+        <Flex gap={8}>
+          <Button onClick={() => navigate(`/users/${user.id}`)}>
+            Перейти к профилю
+          </Button>
+
+          <UserActions user={user} variant="table" />
+        </Flex>
       ),
     },
   ];

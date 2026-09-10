@@ -223,6 +223,7 @@ const usersSlice = createSlice({
           action.error.message ??
           "Неизвестная ошибка при загрузке списка пользователей";
       })
+
       .addCase(getUserByIdThunk.pending, (state) => {
         state.selectedUserStatus = "pending";
         state.selectedUserError = null;
@@ -249,16 +250,23 @@ const usersSlice = createSlice({
         state.updateUserError = null;
       })
       .addCase(updateUserThunk.fulfilled, (state, action) => {
-        state.selectedUser = action.payload;
         state.updateUserStatus = "fulfilled";
         state.updateUserError = null;
+
+        state.users = state.users.map((user) =>
+          user.id === action.payload.id ? action.payload : user,
+        );
+
+        if (state.selectedUser?.id === action.payload.id) {
+          state.selectedUser = action.payload;
+        }
       })
       .addCase(updateUserThunk.rejected, (state, action) => {
         state.updateUserStatus = "rejected";
         state.updateUserError =
           action.payload ??
           action.error.message ??
-          "Неизвестная ошибка при получении данных пользователя";
+          "Неизвестная ошибка при обновлении данных пользователя";
       })
 
       .addCase(deleteUserThunk.pending, (state) => {
@@ -271,7 +279,11 @@ const usersSlice = createSlice({
 
         state.users = state.users.filter((user) => user.id !== action.payload);
 
-        state.usersTotal -= 1;
+        state.usersTotal = state.usersTotal - 1;
+
+        if (state.selectedUser?.id === action.payload) {
+          state.selectedUser = null;
+        }
       })
       .addCase(deleteUserThunk.rejected, (state, action) => {
         state.deleteUserStatus = "rejected";
@@ -289,15 +301,16 @@ const usersSlice = createSlice({
         state.blockUserStatus = "fulfilled";
         state.blockUserError = null;
 
-        state.selectedUser = action.payload;
-
         state.users = state.users.map((user) =>
           user.id === action.payload.id ? action.payload : user,
         );
+
+        if (state.selectedUser?.id === action.payload.id) {
+          state.selectedUser = action.payload;
+        }
       })
       .addCase(setUserBlockStatusThunk.rejected, (state, action) => {
         state.blockUserStatus = "rejected";
-
         state.blockUserError =
           action.payload ??
           action.error.message ??
@@ -312,15 +325,16 @@ const usersSlice = createSlice({
         state.updateUserRolesStatus = "fulfilled";
         state.updateUserRolesError = null;
 
-        state.selectedUser = action.payload;
-
         state.users = state.users.map((user) =>
           user.id === action.payload.id ? action.payload : user,
         );
+
+        if (state.selectedUser?.id === action.payload.id) {
+          state.selectedUser = action.payload;
+        }
       })
       .addCase(updateUserRolesThunk.rejected, (state, action) => {
         state.updateUserRolesStatus = "rejected";
-
         state.updateUserRolesError =
           action.payload ??
           action.error.message ??

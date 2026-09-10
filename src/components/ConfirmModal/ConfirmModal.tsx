@@ -1,5 +1,5 @@
 import { Alert, Modal, Typography } from "antd";
-import type { JSX } from "react";
+import type { JSX, ReactNode } from "react";
 
 const { Paragraph } = Typography;
 
@@ -12,6 +12,7 @@ interface ConfirmModalProps {
   isLoading?: boolean;
   danger?: boolean;
   error?: string | null;
+  children?: ReactNode;
   onConfirm: () => void | Promise<void>;
   onCancel: () => void;
 }
@@ -25,6 +26,7 @@ export function ConfirmModal({
   isLoading = false,
   danger = false,
   error = null,
+  children,
   onConfirm,
   onCancel,
 }: ConfirmModalProps): JSX.Element {
@@ -41,9 +43,15 @@ export function ConfirmModal({
       onOk={onConfirm}
       onCancel={onCancel}
     >
-      <Paragraph style={{ marginBottom: error ? 16 : 0 }}>
+      <Paragraph
+        style={{
+          marginBottom: children || error ? 16 : 0,
+        }}
+      >
         {description}
       </Paragraph>
+
+      {children}
 
       {error && (
         <Alert
@@ -51,6 +59,7 @@ export function ConfirmModal({
           title="Не удалось выполнить действие"
           description={error}
           showIcon
+          style={{ marginTop: children ? 16 : 0 }}
         />
       )}
     </Modal>
