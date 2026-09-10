@@ -9,6 +9,7 @@ import type { JSX } from "react";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { EntryRoute } from "./routes/EntryRoute";
 import { UsersPage } from "./page/UsersPage/UsersPage";
+import { UserDetailsPage } from "./page/UserDetailsPage/UserDetailsPage";
 
 export function AppRouter(): JSX.Element {
   return (
@@ -28,6 +29,7 @@ export function AppRouter(): JSX.Element {
             element={<ProtectedRoute allowedRoles={["admin", "moderator"]} />}
           >
             <Route path="/users" element={<UsersPage />} />
+            <Route path="/users/:id" element={<UserDetailsPage />} />
           </Route>
         </Route>
       </Route>
