@@ -2,6 +2,17 @@ import type { User } from "@/types/auth";
 import type { RootState } from "../store";
 import type { RequestStatusType } from "./usersSlice";
 
+export const selectUsers = (state: RootState): User[] => state.users.users;
+
+export const selectUsersTotal = (state: RootState): number =>
+  state.users.usersTotal;
+
+export const selectUsersStatus = (state: RootState): RequestStatusType =>
+  state.users.usersStatus;
+
+export const selectUsersError = (state: RootState): string | null =>
+  state.users.usersError;
+
 export const selectSelectedUser = (state: RootState): User | null =>
   state.users.selectedUser;
 
@@ -16,3 +27,22 @@ export const selectUpdateUserStatus = (state: RootState): RequestStatusType =>
 
 export const selectUpdateUserError = (state: RootState): string | null =>
   state.users.updateUserError;
+
+export const selectDeleteUserStatus = (state: RootState): RequestStatusType =>
+  state.users.deleteUserStatus;
+
+export const selectDeleteUserError = (state: RootState): string | null =>
+  state.users.deleteUserError;
+
+export const selectBlockUserStatus = (state: RootState): RequestStatusType =>
+  state.users.blockUserStatus;
+
+export const selectBlockUserError = (state: RootState): string | null =>
+  state.users.blockUserError;
+
+export const selectUpdateUserRolesStatus = (
+  state: RootState,
+): RequestStatusType => state.users.updateUserRolesStatus;
+
+export const selectUpdateUserRolesError = (state: RootState): string | null =>
+  state.users.updateUserRolesError;

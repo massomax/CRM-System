@@ -1,4 +1,11 @@
-import { getUserList } from "@/api/usersApi";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  selectUsers,
+  selectUsersError,
+  selectUsersStatus,
+  selectUsersTotal,
+} from "@/store/users/usersSelectors";
+import { getUserListThunk } from "@/store/users/usersSlice";
 import { type User } from "@/types/auth";
 import { Button, Flex, Table, Tag, type TableProps } from "antd";
 import { useEffect, useState, type JSX } from "react";
@@ -79,49 +86,39 @@ const getColumns = (
 
 export function UsersPage(): JSX.Element {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const columns = getColumns(navigate);
 
-  const [users, setUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const users = useAppSelector(selectUsers);
+  const usersTotal = useAppSelector(selectUsersTotal);
+  const usersStatus = useAppSelector(selectUsersStatus);
+  const usersError = useAppSelector(selectUsersError);
+
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
-  const [total, setTotal] = useState<number>(0);
 
   useEffect(() => {
-    setIsLoading(true);
-    setError(null);
+    const offset = (currentPage - 1) * pageSize;
 
-    const loadUsers = async (): Promise<void> => {
-      try {
-        const offset = (currentPage - 1) * pageSize;
-        const response = await getUserList({ limit: pageSize, offset });
-        setUsers(response.data);
-        setTotal(response.total);
-      } catch (error) {
-        if (error instanceof Error) {
-          setError(error.message);
-        } else {
-          setError("Неизвестная ошибка при загрузке списка пользователей!");
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadUsers();
-  }, [currentPage, pageSize]);
+    dispatch(
+      getUserListThunk({
+        limit: pageSize,
+        offset,
+      }),
+    );
+  }, [dispatch, currentPage, pageSize]);
 
   return (
     <>
-      {error ? (
-        <p>{error}</p>
+      {usersError ? (
+        <p>{usersError}</p>
       ) : (
         <Table<User>
           columns={columns}
           dataSource={users}
           rowKey="id"
-          loading={isLoading}
+          loading={usersStatus === "pending"}
           style={{ width: "100%" }}
           locale={{
             emptyText: "Пользователи не найдены",
@@ -129,7 +126,7 @@ export function UsersPage(): JSX.Element {
           pagination={{
             current: currentPage,
             pageSize,
-            total,
+            total: usersTotal,
             showSizeChanger: true,
             onChange: (page, size) => {
               setCurrentPage(page);

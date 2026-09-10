@@ -1,9 +1,22 @@
-import type { User, UserListResponse, UserUpdateRequest } from "@/types/auth";
+import type {
+  Role,
+  User,
+  UserListResponse,
+  UserUpdateRequest,
+} from "@/types/auth";
 import { api } from "./apiClient";
 
 type GetUserListParams = {
   limit: number;
   offset: number;
+};
+
+export interface RolesRequest {
+  roles: Role[];
+}
+
+export type UserBlockRequest = {
+  isBlocked: boolean;
 };
 
 export const getUserList = async (
@@ -25,5 +38,27 @@ export const updateUser = async (
   data: UserUpdateRequest,
 ): Promise<User> => {
   const response = await api.put<User>(`/users/${id}`, data);
+  return response.data;
+};
+
+export const deleteUser = async (id: User["id"]): Promise<void> => {
+  await api.delete(`/users/${id}`);
+};
+
+export const setUserBlockStatus = async (
+  id: User["id"],
+  data: UserBlockRequest,
+): Promise<User> => {
+  const response = await api.put<User>(`/users/${id}/block`, data);
+
+  return response.data;
+};
+
+export const updateUserRoles = async (
+  id: User["id"],
+  data: RolesRequest,
+): Promise<User> => {
+  const response = await api.put<User>(`/users/${id}/roles`, data);
+
   return response.data;
 };
