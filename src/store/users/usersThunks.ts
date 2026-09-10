@@ -7,6 +7,7 @@ import {
   updateUserRoles,
 } from "@/api/usersApi";
 import type {
+  GetUserListParams,
   Role,
   User,
   UserListResponse,
@@ -16,10 +17,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getUserListThunk = createAsyncThunk<
   UserListResponse,
-  {
-    limit: number;
-    offset: number;
-  },
+  GetUserListParams,
   {
     rejectValue: string;
   }

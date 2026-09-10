@@ -1,15 +1,11 @@
 import type {
+  GetUserListParams,
   Role,
   User,
   UserListResponse,
   UserUpdateRequest,
 } from "@/types/auth";
 import { api } from "./apiClient";
-
-type GetUserListParams = {
-  limit: number;
-  offset: number;
-};
 
 export interface RolesRequest {
   roles: Role[];
@@ -23,8 +19,12 @@ export const getUserList = async (
   params?: GetUserListParams,
 ): Promise<UserListResponse> => {
   const response = await api.get<UserListResponse>("/users/", {
-    params,
+    params: {
+      ...params,
+      roles: params?.roles?.length ? params.roles.join(",") : undefined,
+    },
   });
+
   return response.data;
 };
 

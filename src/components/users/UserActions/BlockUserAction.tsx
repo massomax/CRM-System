@@ -38,7 +38,6 @@ export function BlockUserAction({
         }),
       ).unwrap();
 
-      setIsLoading(false);
       onClose();
     } catch (error) {
       if (error) {

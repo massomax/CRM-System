@@ -66,4 +66,16 @@ export interface Token {
   RefreshToken: string;
 }
 
+export type UserSortField = "userName" | "email";
+export type SortDirection = "asc" | "desc";
+
+export type GetUserListParams = {
+  limit: number;
+  offset: number;
+  search?: string;
+  orderBy?: UserSortField;
+  orderDir?: SortDirection;
+  roles?: Role[];
+};
+
 export type Role = "user" | "manager" | "moderator" | "admin";

@@ -55,8 +55,6 @@ export function ChangeUserRolesAction({
         }),
       ).unwrap();
 
-      setIsLoading(false);
-      setRolesDraft(null);
       onClose();
     } catch (error) {
       if (error) {
@@ -65,6 +63,7 @@ export function ChangeUserRolesAction({
         setError("Неизвестная ошибка при изменении роли пользователя.");
       }
     } finally {
+      setRolesDraft(null);
       setIsLoading(false);
     }
   };

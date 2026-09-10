@@ -29,7 +29,6 @@ export function DeleteUserAction({
     try {
       await dispatch(deleteUserThunk(user.id)).unwrap();
 
-      setIsLoading(false);
       onClose();
       onDeleted?.();
     } catch (error) {
