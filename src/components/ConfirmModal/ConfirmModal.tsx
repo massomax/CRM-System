@@ -7,6 +7,7 @@ interface ConfirmModalProps {
   open: boolean;
   title: string;
   description: string;
+  confirmDisabled?: boolean;
   confirmText?: string;
   cancelText?: string;
   isLoading?: boolean;
@@ -23,6 +24,7 @@ export function ConfirmModal({
   description,
   confirmText = "Подтвердить",
   cancelText = "Отмена",
+  confirmDisabled = false,
   isLoading = false,
   danger = false,
   error = null,
@@ -39,6 +41,10 @@ export function ConfirmModal({
       confirmLoading={isLoading}
       okButtonProps={{
         danger,
+        disabled: confirmDisabled,
+      }}
+      cancelButtonProps={{
+        disabled: isLoading,
       }}
       onOk={onConfirm}
       onCancel={onCancel}

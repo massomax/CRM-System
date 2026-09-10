@@ -48,6 +48,8 @@ export function BlockUserAction({
           "Неизвестная ошибка при блокировки или разблокировки пользователя.",
         );
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 

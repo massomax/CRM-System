@@ -38,6 +38,8 @@ export function DeleteUserAction({
       } else {
         setError("Неизсвестная ошибка при удалении пользователя.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 

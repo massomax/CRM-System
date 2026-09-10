@@ -14,6 +14,7 @@ import { useNavigate, type NavigateFunction } from "react-router";
 
 const getColumns = (
   navigate: NavigateFunction,
+  onDeleted: () => void,
 ): TableProps<User>["columns"] => {
   return [
     {
@@ -82,7 +83,7 @@ const getColumns = (
             Перейти к профилю
           </Button>
 
-          <UserActions user={user} variant="table" />
+          <UserActions user={user} variant="table" onDeleted={onDeleted} />
         </Flex>
       ),
     },
@@ -93,8 +94,6 @@ export function UsersPage(): JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const columns = getColumns(navigate);
-
   const users = useAppSelector(selectUsers);
   const usersTotal = useAppSelector(selectUsersTotal);
   const usersStatus = useAppSelector(selectUsersStatus);
@@ -102,6 +101,24 @@ export function UsersPage(): JSX.Element {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
+
+  const handleUserDeleted = (): void => {
+    if (users.length === 1 && currentPage > 1) {
+      setCurrentPage((page) => page - 1);
+      return;
+    }
+
+    const offset = (currentPage - 1) * pageSize;
+
+    dispatch(
+      getUserListThunk({
+        limit: pageSize,
+        offset,
+      }),
+    );
+  };
+
+  const columns = getColumns(navigate, handleUserDeleted);
 
   useEffect(() => {
     const offset = (currentPage - 1) * pageSize;

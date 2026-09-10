@@ -64,6 +64,8 @@ export function ChangeUserRolesAction({
       } else {
         setError("Неизвестная ошибка при изменении роли пользователя.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -73,6 +75,7 @@ export function ChangeUserRolesAction({
       title="Изменение ролей"
       description={`Измените роли пользователя ${user.userName}`}
       confirmText="Сохранить роли"
+      confirmDisabled={selectedRoles.length === 0}
       isLoading={isLoading}
       error={error}
       onConfirm={handleConfirm}
@@ -86,6 +89,7 @@ export function ChangeUserRolesAction({
           value={selectedRoles}
           options={roleOptions}
           onChange={setRolesDraft}
+          disabled={isLoading}
           placeholder="Выберите роли"
           style={{ width: "100%" }}
         />
