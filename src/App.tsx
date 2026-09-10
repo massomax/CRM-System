@@ -5,7 +5,7 @@ import { initializeAuthThunk } from "./store/auth/authSlice";
 
 function App() {
   const dispatch = useAppDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const checkTokens = async (): Promise<void> => {

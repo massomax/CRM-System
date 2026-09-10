@@ -11,7 +11,7 @@ export const signIn = async (payload: AuthData): Promise<Token> => {
 };
 
 export const refreshAccessToken = async (
-  refreshToken: Token["refreshToken"],
+  refreshToken: Token["RefreshToken"],
 ): Promise<Token> => {
   const response = await apiPublic.post<Token>("/auth/refresh", {
     refreshToken,

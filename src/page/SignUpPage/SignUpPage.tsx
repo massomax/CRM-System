@@ -38,7 +38,7 @@ export function SignUpPage(): JSX.Element {
       const phoneNumber = values.phoneNumber?.trim();
 
       const payload: UserRegistration = {
-        username: values.username.trim(),
+        userName: values.username.trim(),
         login: values.login.trim(),
         password: values.password,
         email: values.email.trim(),

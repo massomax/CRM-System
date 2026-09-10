@@ -10,7 +10,7 @@ const PASSWORD_MIN_LENGTH = 6;
 const PASSWORD_MAX_LENGTH = 60;
 
 const USERNAME_ALPHABET_REGEXP = /^[A-Za-zА-Яа-яЁё]+$/u;
-const LOGIN_LATIN_REGEXP = /^[A-Za-z]+$/;
+const LOGIN_LATIN_REGEXP = /^[A-Za-z-]+$/;
 
 const PHONE_REGEXP = /^\+7\d{10}$/;
 
@@ -49,7 +49,7 @@ export const loginRules: Rule[] = [
   },
   {
     pattern: LOGIN_LATIN_REGEXP,
-    message: "Логин может содержать только латинские буквы",
+    message: "Логин может содержать только латинские буквы и дефис",
   },
 ];
 

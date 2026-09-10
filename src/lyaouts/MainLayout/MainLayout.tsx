@@ -1,42 +1,63 @@
-import { Link, Outlet, useLocation, useNavigate } from "react-router";
-import { useState, type JSX } from "react";
-import styles from "./MainLayout.module.css";
-
+import { logoutUser } from "@/api/userApi";
+import { tokenManager } from "@/services/tokenManager";
+import { selectCurrentUser } from "@/store/auth/authSelectors";
+import { authLoggedOut } from "@/store/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import type { Todo } from "@/types/todos";
 import {
   ContainerOutlined,
   LogoutOutlined,
+  TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu } from "antd";
 import type { MenuItemType } from "antd/es/menu/interface";
-import type { Todo } from "@/types/todos";
-import { logoutUser } from "@/api/userApi";
-import { tokenManager } from "@/services/tokenManager";
-import { useAppDispatch } from "@/store/hooks";
-import { authLoggedOut } from "@/store/auth/authSlice";
+import { useState, type JSX } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router";
+import styles from "./MainLayout.module.css";
+
 const { Content, Sider } = Layout;
 
 type ItemType = MenuItemType;
 
-const items: ItemType[] = [
-  {
-    label: <Link to="/todos">Список задач</Link>,
-    key: "/todos",
-    icon: <ContainerOutlined />,
-  },
-  {
-    label: <Link to="/profile">Профиль</Link>,
-    key: "/profile",
-    icon: <UserOutlined />,
-  },
-];
-
 export function MainLayout(): JSX.Element {
   const [isCollapsed, setIsCollapsed] = useState<Todo["isDone"]>(false);
+
   const location = useLocation();
+  const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+
+  const currentUser = useAppSelector(selectCurrentUser);
+
+  const canViewUsers =
+    currentUser?.roles.includes("admin") ||
+    currentUser?.roles.includes("moderator");
+
+  const items: ItemType[] = [
+    {
+      label: <Link to="/todos">Список задач</Link>,
+      key: "/todos",
+      icon: <ContainerOutlined />,
+    },
+    {
+      label: <Link to="/profile">Профиль</Link>,
+      key: "/profile",
+      icon: <UserOutlined />,
+    },
+  ];
+
+  if (canViewUsers) {
+    items.push({
+      label: <Link to="/users">Пользователи</Link>,
+      key: "/users",
+      icon: <TeamOutlined />,
+    });
+  }
+
+  const selectedMenuKey = location.pathname.startsWith("/users")
+    ? "/users"
+    : location.pathname;
 
   const handleLogoutUser = async (): Promise<void> => {
     try {
@@ -60,11 +81,11 @@ export function MainLayout(): JSX.Element {
         <div className={styles.siderContent}>
           <Menu
             theme="dark"
-            defaultSelectedKeys={["1"]}
             mode="inline"
             items={items}
-            selectedKeys={[location.pathname]}
+            selectedKeys={[selectedMenuKey]}
           />
+
           <div className={styles.siderFooter}>
             <Button
               block
@@ -78,6 +99,7 @@ export function MainLayout(): JSX.Element {
           </div>
         </div>
       </Sider>
+
       <Layout>
         <Content style={{ margin: "0 16px" }}>
           <Outlet />

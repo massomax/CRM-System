@@ -1,5 +1,5 @@
 import { getProfile } from "@/api/userApi";
-import type { Profile } from "@/types/auth";
+import type { User } from "@/types/users";
 import {
   Alert,
   Card,
@@ -18,7 +18,7 @@ const { Content } = Layout;
 const { Text, Title } = Typography;
 
 export function UserProfilePage(): JSX.Element {
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,7 +49,7 @@ export function UserProfilePage(): JSX.Element {
         {
           key: "username",
           label: "Имя пользователя",
-          children: profile.username,
+          children: profile.userName,
         },
         {
           key: "email",

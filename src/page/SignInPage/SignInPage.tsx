@@ -1,5 +1,5 @@
 import { signIn } from "@/api/authApi";
-import { authLoggedIn } from "@/store/auth/authSlice";
+import { authLoggedIn, getCurrentUserThunk } from "@/store/auth/authSlice";
 import { useAppDispatch } from "@/store/hooks";
 import type { AuthData } from "@/types/auth";
 import { tokenManager } from "@/services/tokenManager";
@@ -36,6 +36,7 @@ export function SignInPage(): JSX.Element {
       tokenManager.saveTokens(tokens, values.isRememberMe);
 
       dispatch(authLoggedIn());
+      dispatch(getCurrentUserThunk());
 
       navigate("/todos", {
         replace: true,

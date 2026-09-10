@@ -8,6 +8,8 @@ import { UserProfilePage } from "./page/UserProfilePage/UserProfilePage";
 import type { JSX } from "react";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { EntryRoute } from "./routes/EntryRoute";
+import { UsersPage } from "./page/UsersPage/UsersPage";
+import { UserDetailsPage } from "./page/UserDetailsPage/UserDetailsPage";
 
 export function AppRouter(): JSX.Element {
   return (
@@ -23,6 +25,12 @@ export function AppRouter(): JSX.Element {
         <Route element={<MainLayout />}>
           <Route path="/todos" element={<TodosPage />} />
           <Route path="/profile" element={<UserProfilePage />} />
+          <Route
+            element={<ProtectedRoute allowedRoles={["admin", "moderator"]} />}
+          >
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/users/:id" element={<UserDetailsPage />} />
+          </Route>
         </Route>
       </Route>
     </Routes>
