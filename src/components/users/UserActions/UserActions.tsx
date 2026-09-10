@@ -31,12 +31,16 @@ export function UserActions({
 
   const isModerator = currentUser?.roles.includes("moderator") ?? false;
 
-  const canDelete = isAdmin;
-  const canChangeRoles = isAdmin;
+  const isCurrentUser = currentUser?.id === user.id;
 
-  const canBlock = !user.isBlocked && (isAdmin || isModerator);
+  const canDelete = isAdmin && !isCurrentUser;
 
-  const canUnblock = user.isBlocked && isAdmin;
+  const canChangeRoles = isAdmin && !isCurrentUser;
+
+  const canBlock =
+    !isCurrentUser && !user.isBlocked && (isAdmin || isModerator);
+
+  const canUnblock = !isCurrentUser && user.isBlocked && isAdmin;
 
   const handleCloseAction = (): void => {
     setActiveAction(null);
