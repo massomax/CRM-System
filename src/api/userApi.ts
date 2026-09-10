@@ -1,4 +1,4 @@
-import type { User } from "@/types/auth";
+import type { User } from "@/types/users";
 import { api } from "./apiClient";
 
 export const getProfile = async (): Promise<User> => {
