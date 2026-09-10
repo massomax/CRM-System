@@ -7,7 +7,7 @@ import {
   selectUpdateUserError,
   selectUpdateUserStatus,
 } from "@/store/users/usersSelectors";
-import { getUserByIdThunk, updateUserThunk } from "@/store/users/usersSlice";
+import { getUserByIdThunk, updateUserThunk } from "@/store/users/usersThunks";
 import type { UserUpdateRequest } from "@/types/auth";
 import { LeftOutlined, UserOutlined } from "@ant-design/icons";
 import {

@@ -1,12 +1,8 @@
 import { ConfirmModal } from "@/components/ConfirmModal/ConfirmModal";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  selectDeleteUserError,
-  selectDeleteUserStatus,
-} from "@/store/users/usersSelectors";
-import { deleteUserThunk } from "@/store/users/usersSlice";
+import { useAppDispatch } from "@/store/hooks";
+import { deleteUserThunk } from "@/store/users/usersThunks";
 import type { User } from "@/types/auth";
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 
 interface DeleteUserActionProps {
   user: User;
@@ -23,17 +19,25 @@ export function DeleteUserAction({
 }: DeleteUserActionProps): JSX.Element {
   const dispatch = useAppDispatch();
 
-  const deleteUserStatus = useAppSelector(selectDeleteUserStatus);
-  const deleteUserError = useAppSelector(selectDeleteUserError);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleConfirm = async (): Promise<void> => {
+    setIsLoading(true);
+    setError(null);
+
     try {
       await dispatch(deleteUserThunk(user.id)).unwrap();
 
+      setIsLoading(false);
       onClose();
       onDeleted?.();
-    } catch {
-      // Ошибка уже сохранена в Redux
+    } catch (error) {
+      if (error) {
+        setError(String(error));
+      } else {
+        setError("Неизсвестная ошибка при удалении пользователя.");
+      }
     }
   };
 
@@ -44,8 +48,8 @@ export function DeleteUserAction({
       description={`Вы действительно хотите удалить пользователя ${user.userName}?`}
       confirmText="Удалить"
       danger
-      isLoading={deleteUserStatus === "pending"}
-      error={deleteUserError}
+      isLoading={isLoading}
+      error={error}
       onConfirm={handleConfirm}
       onCancel={onClose}
     />

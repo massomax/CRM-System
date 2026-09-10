@@ -6,7 +6,7 @@ import {
   selectUsersStatus,
   selectUsersTotal,
 } from "@/store/users/usersSelectors";
-import { getUserListThunk } from "@/store/users/usersSlice";
+import { getUserListThunk } from "@/store/users/usersThunks";
 import { type User } from "@/types/auth";
 import { Button, Flex, Table, Tag, type TableProps } from "antd";
 import { useEffect, useState, type JSX } from "react";

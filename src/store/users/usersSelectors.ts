@@ -27,22 +27,3 @@ export const selectUpdateUserStatus = (state: RootState): RequestStatusType =>
 
 export const selectUpdateUserError = (state: RootState): string | null =>
   state.users.updateUserError;
-
-export const selectDeleteUserStatus = (state: RootState): RequestStatusType =>
-  state.users.deleteUserStatus;
-
-export const selectDeleteUserError = (state: RootState): string | null =>
-  state.users.deleteUserError;
-
-export const selectBlockUserStatus = (state: RootState): RequestStatusType =>
-  state.users.blockUserStatus;
-
-export const selectBlockUserError = (state: RootState): string | null =>
-  state.users.blockUserError;
-
-export const selectUpdateUserRolesStatus = (
-  state: RootState,
-): RequestStatusType => state.users.updateUserRolesStatus;
-
-export const selectUpdateUserRolesError = (state: RootState): string | null =>
-  state.users.updateUserRolesError;

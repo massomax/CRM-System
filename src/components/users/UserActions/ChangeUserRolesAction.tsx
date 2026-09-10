@@ -1,10 +1,6 @@
 import { ConfirmModal } from "@/components/ConfirmModal/ConfirmModal";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  selectUpdateUserRolesError,
-  selectUpdateUserRolesStatus,
-} from "@/store/users/usersSelectors";
-import { updateUserRolesThunk } from "@/store/users/usersSlice";
+import { useAppDispatch } from "@/store/hooks";
+import { updateUserRolesThunk } from "@/store/users/usersThunks";
 import type { Role, User } from "@/types/auth";
 import { Flex, Select, Typography } from "antd";
 import { useState, type JSX } from "react";
@@ -31,16 +27,15 @@ export function ChangeUserRolesAction({
 }: ChangeUserRolesActionProps): JSX.Element {
   const dispatch = useAppDispatch();
 
-  const updateUserRolesStatus = useAppSelector(selectUpdateUserRolesStatus);
-
-  const updateUserRolesError = useAppSelector(selectUpdateUserRolesError);
-
   const [rolesDraft, setRolesDraft] = useState<Role[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const selectedRoles = rolesDraft ?? user.roles;
 
   const handleClose = (): void => {
     setRolesDraft(null);
+    setError(null);
     onClose();
   };
 
@@ -48,6 +43,9 @@ export function ChangeUserRolesAction({
     if (selectedRoles.length === 0) {
       return;
     }
+
+    setIsLoading(true);
+    setError(null);
 
     try {
       await dispatch(
@@ -57,10 +55,15 @@ export function ChangeUserRolesAction({
         }),
       ).unwrap();
 
+      setIsLoading(false);
       setRolesDraft(null);
       onClose();
-    } catch {
-      // Ошибка уже сохранена в Redux
+    } catch (error) {
+      if (error) {
+        setError(String(error));
+      } else {
+        setError("Неизвестная ошибка при изменении роли пользователя.");
+      }
     }
   };
 
@@ -70,8 +73,8 @@ export function ChangeUserRolesAction({
       title="Изменение ролей"
       description={`Измените роли пользователя ${user.userName}`}
       confirmText="Сохранить роли"
-      isLoading={updateUserRolesStatus === "pending"}
-      error={updateUserRolesError}
+      isLoading={isLoading}
+      error={error}
       onConfirm={handleConfirm}
       onCancel={handleClose}
     >

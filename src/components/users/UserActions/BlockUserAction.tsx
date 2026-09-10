@@ -1,12 +1,8 @@
 import { ConfirmModal } from "@/components/ConfirmModal/ConfirmModal";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  selectBlockUserError,
-  selectBlockUserStatus,
-} from "@/store/users/usersSelectors";
-import { setUserBlockStatusThunk } from "@/store/users/usersSlice";
+import { useAppDispatch } from "@/store/hooks";
+import { setUserBlockStatusThunk } from "@/store/users/usersThunks";
 import type { User } from "@/types/auth";
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 
 type BlockActionType = "block" | "unblock";
 
@@ -25,12 +21,15 @@ export function BlockUserAction({
 }: BlockUserActionProps): JSX.Element {
   const dispatch = useAppDispatch();
 
-  const blockUserStatus = useAppSelector(selectBlockUserStatus);
-  const blockUserError = useAppSelector(selectBlockUserError);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const isBlockAction = action === "block";
 
   const handleConfirm = async (): Promise<void> => {
+    setIsLoading(true);
+    setError(null);
+
     try {
       await dispatch(
         setUserBlockStatusThunk({
@@ -39,9 +38,16 @@ export function BlockUserAction({
         }),
       ).unwrap();
 
+      setIsLoading(false);
       onClose();
-    } catch {
-      // Ошибка уже сохранена в Redux
+    } catch (error) {
+      if (error) {
+        setError(String(error));
+      } else {
+        setError(
+          "Неизвестная ошибка при блокировки или разблокировки пользователя.",
+        );
+      }
     }
   };
 
@@ -58,8 +64,8 @@ export function BlockUserAction({
       }
       confirmText={isBlockAction ? "Заблокировать" : "Разблокировать"}
       danger={isBlockAction}
-      isLoading={blockUserStatus === "pending"}
-      error={blockUserError}
+      isLoading={isLoading}
+      error={error}
       onConfirm={handleConfirm}
       onCancel={onClose}
     />
